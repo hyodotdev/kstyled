@@ -1,0 +1,68 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Run Android Studio (example)",
+      "request": "launch",
+      "command": "open -a 'Android Studio' '${workspaceFolder}/packages/example/android'",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run Xcode (example)",
+      "request": "launch",
+      "command": "open '${workspaceFolder}/packages/example/ios/reactnativekstyledexample.xcworkspace'",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run Android",
+      "request": "launch",
+      "command": "pnpm --filter example android",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run iOS",
+      "request": "launch",
+      "command": "pnpm --filter example ios",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run iOS (Device)",
+      "request": "launch",
+      "command": "pnpm --filter example ios --device",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run Web",
+      "request": "launch",
+      "command": "pnpm --filter example web",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run Babel Plugin Test",
+      "request": "launch",
+      "command": "pnpm --filter @kstyled/babel-plugin-kstyled test",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Build plugin packages",
+      "request": "launch",
+      "command": "pnpm build",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Start Documentation",
+      "request": "launch",
+      "command": "pnpm --filter kstyled-docs start",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

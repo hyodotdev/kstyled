@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/runtime" },
+    { "path": "./packages/babel-plugin-kstyled" },
+    { "path": "./packages/example" }
+  ]
+}

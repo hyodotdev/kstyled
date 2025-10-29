@@ -1,0 +1,65 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.strictNullChecks": true,
+  "typescript.preferences.noImplicitAny": false,
+  "jest.autoRun": "off",
+  "jest.jestCommandLine": "pnpm test",
+  "files.associations": {
+    "*.test.ts": "typescript",
+    "*.test.tsx": "typescriptreact"
+  },
+  "styled-components.tags": [
+    "styled",
+    "css"
+  ],
+  "css.lint.validProperties": [
+    "shadow-color",
+    "shadow-opacity",
+    "shadow-offset",
+    "shadow-radius",
+    "spread-radius",
+    "padding-horizontal",
+    "padding-vertical",
+    "margin-vertical",
+    "margin-horizontal",
+    "tint-color",
+    "aspect-ratio",
+    "elevation",
+    "blur-radius",
+    "align-items",
+    "align-self",
+    "border-radius",
+    "border-width",
+    "border-color",
+    "border-bottom-width",
+    "border-bottom-color",
+    "border-left-width",
+    "border-left-color",
+    "flex-direction",
+    "justify-content",
+    "margin-bottom",
+    "margin-top",
+    "font-weight",
+    "font-size",
+    "line-height"
+  ],
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false,
+  "typescript.validate.enable": true,
+  "typescript.suggest.enabled": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "typescript.tsserver.pluginPaths": [],
+  "cSpell.words": [
+    "Flexbox",
+    "kstyled",
+    "Pressable"
+  ]
+}

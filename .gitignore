@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Bun
+bun.lockb
+
+# Testing
+coverage/
+.nyc_output
+
+# Build outputs
+dist/
+lib/
+build/
+*.tsbuildinfo
+
+# Turbo
+.turbo/
+
+# IDEs
+.vscode/
+!.vscode/settings.json
+!.vscode.styled-components.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# React Native / Expo
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+
+.claude/settings.local.json
+dist-test/
+
+# Remove ios and android example folders
+packages/example/ios
+packages/example/android

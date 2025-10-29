@@ -1,0 +1,52 @@
+{
+  "name": "kstyled",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zero-runtime styled-components for React Native - Build-time style extraction with StyleSheet performance",
+  "keywords": [
+    "react-native",
+    "styled-components",
+    "stylesheet",
+    "performance",
+    "zero-runtime",
+    "babel-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyodotdev/kstyled.git"
+  },
+  "license": "MIT",
+  "author": "hyodotdev (https://hyo.dev)",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --filter=example",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "bun:install": "bun install",
+    "bun:build": "bun run build",
+    "bun:dev": "bun run dev",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "prepublish": "pnpm build && pnpm typecheck && pnpm test",
+    "publish:packages": "pnpm publish -r --filter '!example' --filter '!kstyled-docs' --access public",
+    "publish:dry": "pnpm publish -r --filter '!example' --filter '!kstyled-docs' --access public --dry-run",
+    "version:patch": "pnpm -r --filter '!example' --filter '!kstyled-docs' exec npm version patch",
+    "version:minor": "pnpm -r --filter '!example' --filter '!kstyled-docs' exec npm version minor",
+    "version:major": "pnpm -r --filter '!example' --filter '!kstyled-docs' exec npm version major"
+  },
+  "devDependencies": {
+    "@turbo/gen": "^2.3.3",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.4"
+}
