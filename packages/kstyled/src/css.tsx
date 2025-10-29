@@ -2,12 +2,20 @@
 import type { CompiledStyles } from './types';
 
 /**
+ * Global debug flag for fallback CSS runtime parser
+ * This is only used when babel plugin is not working (fallback mode)
+ * For normal usage, control via babel.config.js: ['babel-plugin-kstyled', { debug: true }]
+ */
+const FALLBACK_DEBUG = false;
+
+/**
  * Metadata injected by Babel plugin for css`` helper
  */
 interface CssMetadata {
   compiledStyles?: CompiledStyles;
   styleKeys?: string[];
   getDynamicPatch?: (props: any) => any;
+  debug?: boolean;
 }
 
 /**
@@ -126,7 +134,9 @@ export const css: CssFactory = Object.assign(
       // Ignore stack trace errors
     }
 
-    console.log(`[kstyled-css-runtime] Parsing CSS in ${callerInfo}:`, cssString);
+    if (FALLBACK_DEBUG) {
+      console.log(`[kstyled-css-runtime] Parsing CSS in ${callerInfo}:`, cssString);
+    }
 
     // Parse the CSS string into a style object
     try {
@@ -183,7 +193,9 @@ export const css: CssFactory = Object.assign(
         }
       }
 
-      console.log(`[kstyled-css-runtime] Result in ${callerInfo}:`, styleObj);
+      if (FALLBACK_DEBUG) {
+        console.log(`[kstyled-css-runtime] Result in ${callerInfo}:`, styleObj);
+      }
       return styleObj;
     } catch (error) {
       console.warn('[kstyled] Failed to parse css``: ', error);

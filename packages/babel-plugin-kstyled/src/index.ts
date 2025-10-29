@@ -17,6 +17,7 @@ import { parseCSS } from './css-parser';
 import type { PluginOptions } from './types';
 
 interface PluginState extends PluginPass {
+  opts: PluginOptions;
   styledImportName: string | null;
   cssImportName: string | null;
   styleSheetImportName: string | null;
@@ -263,6 +264,13 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
               );
             }
 
+            // Add debug flag if enabled
+            if (state.opts.debug) {
+              metadataProps.push(
+                t.objectProperty(t.identifier('debug'), t.booleanLiteral(true))
+              );
+            }
+
             // Insert StyleSheet at top of file if we have one
             if (styleSheetNode) {
               const program = path.findParent((p) =>
@@ -495,6 +503,13 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
           if (attrsMetadata) {
             metadataProps.push(
               t.objectProperty(t.identifier('attrs'), attrsMetadata)
+            );
+          }
+
+          // Add debug flag if enabled
+          if (state.opts.debug) {
+            metadataProps.push(
+              t.objectProperty(t.identifier('debug'), t.booleanLiteral(true))
             );
           }
 
