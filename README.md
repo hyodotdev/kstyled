@@ -8,7 +8,7 @@
 ⚡️ **Compile-time CSS-in-JS for React Native** • styled-components API with zero runtime overhead
 
 <p align="center">
-  <img src="packages/docs/static/img/k-dev.png" alt="K-Dev Demon Styles" width="400" />
+  <img src="packages/docs/static/img/k-dev.png" alt="K-Dev Demon Styles" max-width="1200" />
 </p>
 
 ## Quick Start
