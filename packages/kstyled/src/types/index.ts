@@ -77,7 +77,7 @@ export type StyledComponentProps<
 /**
  * Interpolation function type
  */
-export type Interpolation<P = {}> = (props: P & { theme: DefaultTheme }) => StyleObject | string | number;
+export type Interpolation<P = {}> = (props: P & { theme: DefaultTheme }) => StyleObject | string | number | undefined;
 
 /**
  * Template literal or interpolation array

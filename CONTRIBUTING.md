@@ -14,42 +14,44 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 1. **Fork and clone the repository**
 
-```bash
-git clone https://github.com/hyodotdev/kstyled.git
-cd kstyled
-```
+   ```bash
+   git clone https://github.com/hyodotdev/kstyled.git
+   cd kstyled
+   ```
 
 2. **Install dependencies**
 
-Using pnpm (recommended):
-```bash
-pnpm install
-```
+   Using pnpm (recommended):
 
-Using bun:
-```bash
-bun install
-```
+   ```bash
+   pnpm install
+   ```
+
+   Using bun:
+
+   ```bash
+   bun install
+   ```
 
 3. **Build all packages**
 
-```bash
-pnpm build
-# or
-bun run build
-```
+   ```bash
+   pnpm build
+   # or
+   bun run build
+   ```
 
 4. **Run the example app**
 
-```bash
-pnpm dev
-# or
-bun run dev
-```
+   ```bash
+   pnpm dev
+   # or
+   bun run dev
+   ```
 
 ## Project Structure
 
-```
+```sh
 kstyled/
 ├── packages/
 │   ├── kstyled/ # Runtime library (styled, ThemeProvider, etc.)
@@ -66,27 +68,31 @@ kstyled/
 ### Making Changes
 
 1. Create a new branch for your feature/fix:
-```bash
-git checkout -b feature/your-feature-name
-```
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
 2. Make your changes in the appropriate package:
+
    - Runtime changes: `packages/kstyled/src/`
    - Babel plugin changes: `packages/babel-plugin-kstyled/src/`
    - Example app changes: `packages/example/app/`
    - Documentation: `packages/docs/docs/`
 
 3. Build and test your changes:
-```bash
-pnpm build
-pnpm typecheck
-pnpm lint
-```
+
+   ```bash
+   pnpm build
+   pnpm typecheck
+   pnpm lint
+   ```
 
 4. Test in the example app:
-```bash
-pnpm dev
-```
+
+   ```bash
+   pnpm dev
+   ```
 
 ### Running the Example App
 
@@ -108,7 +114,7 @@ pnpm --filter example web        # Web
 
 **One Metro instance serves all platforms** (Android, iOS, Web). Start Metro once, then connect each platform to it.
 
-```
+```txt
 ┌─────────────────────────────────┐
 │   Metro Bundler (port 8081)     │
 └─────────────────────────────────┘
@@ -236,6 +242,7 @@ This project uses Turborepo for build orchestration. Key concepts:
 Both package managers are fully supported:
 
 ### pnpm (Primary)
+
 ```bash
 pnpm install
 pnpm build
@@ -243,6 +250,7 @@ pnpm dev
 ```
 
 ### Bun (Alternative)
+
 ```bash
 bun install
 bun run build
@@ -250,6 +258,7 @@ bun run dev
 ```
 
 **Note:** The lockfiles for both are committed:
+
 - `pnpm-lock.yaml` for pnpm
 - `bun.lockb` for bun
 
@@ -332,17 +341,20 @@ pnpm start --clear
 After making changes to `kstyled` or `babel-plugin-kstyled`:
 
 1. **Rebuild the package**:
+
    ```bash
    pnpm build
    ```
 
 2. **Clear example cache**:
+
    ```bash
    cd packages/example
    rm -rf .expo
    ```
 
 3. **Restart Metro with clean cache**:
+
    ```bash
    pnpm start --clear
    ```

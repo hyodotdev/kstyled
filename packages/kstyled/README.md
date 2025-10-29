@@ -1,5 +1,10 @@
 # kstyled
 
+[![CI](https://github.com/hyodotdev/kstyled/actions/workflows/ci.yml/badge.svg)](https://github.com/hyodotdev/kstyled/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/kstyled.svg)](https://www.npmjs.com/package/kstyled)
+[![npm downloads](https://img.shields.io/npm/dm/kstyled.svg)](https://www.npmjs.com/package/kstyled)
+[![license](https://img.shields.io/npm/l/kstyled.svg)](https://github.com/hyodotdev/kstyled/blob/main/LICENSE)
+
 Runtime library for kstyled. See the [main README](../../README.md) for full documentation.
 
 ## Installation

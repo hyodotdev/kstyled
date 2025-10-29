@@ -1,7 +1,9 @@
 # kstyled
 
+[![CI](https://github.com/hyodotdev/kstyled/actions/workflows/ci.yml/badge.svg)](https://github.com/hyodotdev/kstyled/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/kstyled.svg)](https://www.npmjs.com/package/kstyled)
+[![npm downloads](https://img.shields.io/npm/dm/kstyled.svg)](https://www.npmjs.com/package/kstyled)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm version](https://badge.fury.io/js/kstyled.svg)](https://www.npmjs.com/package/kstyled)
 
 ⚡️ **Compile-time CSS-in-JS for React Native** • styled-components API with zero runtime overhead
 

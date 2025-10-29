@@ -1,5 +1,10 @@
 # babel-plugin-kstyled
 
+[![CI](https://github.com/hyodotdev/kstyled/actions/workflows/ci.yml/badge.svg)](https://github.com/hyodotdev/kstyled/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/babel-plugin-kstyled.svg)](https://www.npmjs.com/package/babel-plugin-kstyled)
+[![npm downloads](https://img.shields.io/npm/dm/babel-plugin-kstyled.svg)](https://www.npmjs.com/package/babel-plugin-kstyled)
+[![license](https://img.shields.io/npm/l/babel-plugin-kstyled.svg)](https://github.com/hyodotdev/kstyled/blob/main/LICENSE)
+
 Babel transformation plugin for kstyled. Extracts styles from template literals and compiles them to `StyleSheet.create` at build time.
 
 ## Installation
