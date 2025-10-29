@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import type { CompiledStyles } from './types';
 
 /**
@@ -81,22 +82,121 @@ function computeCssStyles(
  * - Dynamic styles → computed on each render (still more efficient than creating objects)
  */
 export const css: CssFactory = Object.assign(
-  function cssRuntime(_strings: TemplateStringsArray, ..._interpolations: any[]) {
-    // Runtime fallback without Babel transform
-    console.warn(
-      '[kstyled] css`` runtime parsing is not recommended. Please enable babel-plugin-kstyled for better performance.'
-    );
+  function cssRuntime(strings: TemplateStringsArray, ...interpolations: any[]) {
+    // Runtime CSS parsing for dynamic values
+    // Build the full CSS string with interpolated values
+    let cssString = '';
+    for (let i = 0; i < strings.length; i++) {
+      cssString += strings[i];
+      if (i < interpolations.length) {
+        cssString += interpolations[i];
+      }
+    }
 
-    // Return empty style object as fallback
-    return {};
+    // Extract caller information from stack trace
+    let callerInfo = 'unknown';
+    try {
+      const stack = new Error().stack || '';
+      const lines = stack.split('\n');
+      // Find the first line that's not from this file or node_modules
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.includes('css.tsx') && !line.includes('node_modules')) {
+          // Extract filename and function name
+          // Format: "at functionName (filename:line:col)"
+          const match = line.match(/at\s+(\S+)\s+\(([^)]+)\)/);
+          if (match) {
+            const funcName = match[1];
+            const fullPath = match[2];
+            const filename = fullPath.split('/').pop()?.split(':')[0] || 'unknown';
+            callerInfo = `${filename}:${funcName}`;
+          } else {
+            // Format: "at filename:line:col"
+            const match2 = line.match(/at\s+(.+):(\d+):(\d+)/);
+            if (match2) {
+              const fullPath = match2[1];
+              const filename = fullPath.split('/').pop() || 'unknown';
+              callerInfo = filename;
+            }
+          }
+          break;
+        }
+      }
+    } catch (e) {
+      // Ignore stack trace errors
+    }
+
+    console.log(`[kstyled-css-runtime] Parsing CSS in ${callerInfo}:`, cssString);
+
+    // Parse the CSS string into a style object
+    try {
+      const styleObj: any = {};
+      const lines = cssString.split(';').filter(line => line.trim());
+
+      for (const line of lines) {
+        const colonIndex = line.indexOf(':');
+        if (colonIndex === -1) continue;
+
+        const prop = line.slice(0, colonIndex).trim();
+        const value = line.slice(colonIndex + 1).trim();
+
+        if (!prop || !value) continue;
+
+        // Convert CSS property to camelCase
+        const camelProp = prop.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+
+        // Handle padding and margin shorthand
+        // 1 value: all sides
+        // 2 values: vertical horizontal
+        // 3 values: top horizontal bottom
+        // 4 values: top right bottom left
+        if (camelProp === 'padding' || camelProp === 'margin') {
+          const parts = value.split(/\s+/);
+          const prefix = camelProp; // 'padding' or 'margin'
+
+          if (parts.length === 1) {
+            const val = parseFloat(parts[0]);
+            styleObj[`${prefix}Vertical`] = val;
+            styleObj[`${prefix}Horizontal`] = val;
+          } else if (parts.length === 2) {
+            styleObj[`${prefix}Vertical`] = parseFloat(parts[0]);
+            styleObj[`${prefix}Horizontal`] = parseFloat(parts[1]);
+          } else if (parts.length === 3) {
+            // top, horizontal, bottom
+            styleObj[`${prefix}Top`] = parseFloat(parts[0]);
+            styleObj[`${prefix}Horizontal`] = parseFloat(parts[1]);
+            styleObj[`${prefix}Bottom`] = parseFloat(parts[2]);
+          } else if (parts.length === 4) {
+            styleObj[`${prefix}Top`] = parseFloat(parts[0]);
+            styleObj[`${prefix}Right`] = parseFloat(parts[1]);
+            styleObj[`${prefix}Bottom`] = parseFloat(parts[2]);
+            styleObj[`${prefix}Left`] = parseFloat(parts[3]);
+          }
+        }
+        // Parse numeric values (remove 'px' suffix)
+        else if (value.endsWith('px')) {
+          styleObj[camelProp] = parseFloat(value);
+        }
+        // Keep string values as-is
+        else {
+          styleObj[camelProp] = value;
+        }
+      }
+
+      console.log(`[kstyled-css-runtime] Result in ${callerInfo}:`, styleObj);
+      return styleObj;
+    } catch (error) {
+      console.warn('[kstyled] Failed to parse css``: ', error);
+      return {};
+    }
   },
   {
     __withStyles: function (metadata: CssMetadata): any[] {
       const { compiledStyles, styleKeys, getDynamicPatch } = metadata;
 
-      // Return the computed styles directly
-      // The dynamic patch will be re-evaluated on each render,
-      // but the static styles are already optimized via StyleSheet.create()
+      // IMPORTANT: Call computeCssStyles every time this array is used
+      // This ensures dynamic values are re-computed on each render
+      // The getDynamicPatch function captures closure variables from the template literal
       return computeCssStyles(compiledStyles, styleKeys, getDynamicPatch);
     },
   }

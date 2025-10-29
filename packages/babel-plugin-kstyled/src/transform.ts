@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Core transformation logic
  * Converts styled template literals into StyleSheet calls

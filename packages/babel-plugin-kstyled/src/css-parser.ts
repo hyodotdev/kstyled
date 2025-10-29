@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * CSS Parser
  * Parses template literal CSS into React Native StyleSheet format

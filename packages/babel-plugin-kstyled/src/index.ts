@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Babel Plugin for kstyled
  * Based on Linaria's build-time extraction pattern
@@ -124,10 +125,6 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
           state.cssImportName = null;
           state.styleSheetImportName = null;
           state.styleCounter = 0;
-          const opts = (state.opts as PluginOptions) || {};
-          if (opts.debug) {
-            console.log('[babel-plugin-kstyled] Program entered');
-          }
         },
       },
 
@@ -175,6 +172,32 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
           t.isIdentifier(path.node.tag) &&
           path.node.tag.name === state.cssImportName
         ) {
+          // Check if css`` is inside a function (not at module level)
+          // If so, skip transformation and let runtime handle it
+          let isInsideFunction = false;
+          let currentPath: typeof path.parentPath | null = path.parentPath;
+          while (currentPath !== null) {
+            if (
+              currentPath.isFunctionDeclaration() ||
+              currentPath.isFunctionExpression() ||
+              currentPath.isArrowFunctionExpression() ||
+              currentPath.isObjectMethod() ||
+              currentPath.isClassMethod()
+            ) {
+              isInsideFunction = true;
+              break;
+            }
+            currentPath = currentPath.parentPath;
+          }
+
+          if (isInsideFunction) {
+            if (opts.debug) {
+              const filename = state.file.opts.filename || 'unknown';
+              console.log(`[babel-plugin-kstyled] Skipping css\`\` inside function (runtime parsing) in ${filename}`);
+            }
+            return; // Skip transformation, let runtime handle it
+          }
+
           if (opts.debug) {
             console.log('[babel-plugin-kstyled] Matched css`` pattern');
           }
@@ -287,9 +310,53 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
             t.isIdentifier(path.node.tag.callee) &&
             path.node.tag.callee.name === state.styledImportName
           ) {
+            const componentArg = path.node.tag.arguments[0];
+
+            // Special handling for styled(Animated.View) pattern
+            if (
+              t.isMemberExpression(componentArg) &&
+              t.isIdentifier(componentArg.object) &&
+              componentArg.object.name === 'Animated' &&
+              t.isIdentifier(componentArg.property)
+            ) {
+              const componentName = componentArg.property.name;
+              if (opts.debug) {
+                console.log(`[babel-plugin-kstyled] Detected styled(Animated.${componentName}), transforming...`);
+              }
+
+              // Transform styled(Animated.View) to:
+              // styled(Animated.createAnimatedComponent(View))
+              const program = path.findParent((p) => p.isProgram()) as NodePath<t.Program>;
+              const importedComponent = addNamed(program, componentName, 'react-native');
+
+              // Create: Animated.createAnimatedComponent(View)
+              const createAnimatedCall = t.callExpression(
+                t.memberExpression(
+                  t.identifier(componentArg.object.name), // 'Animated'
+                  t.identifier('createAnimatedComponent')
+                ),
+                [importedComponent]
+              );
+
+              // Replace the component argument
+              path.node.tag.arguments[0] = createAnimatedCall;
+
+              if (opts.debug) {
+                console.log(`[babel-plugin-kstyled] Transformed to: styled(Animated.createAnimatedComponent(${componentName}))\`...\``);
+              }
+            }
+
             styledCall = path.node.tag;
             if (opts.debug) {
-              console.log('[babel-plugin-kstyled] Matched Case 1: styled(Component)`...`');
+              let componentName = 'unknown';
+              if (t.isIdentifier(componentArg)) {
+                componentName = componentArg.name;
+              } else if (t.isMemberExpression(componentArg)) {
+                componentName = 'MemberExpression (transformed)';
+              } else if (t.isCallExpression(componentArg)) {
+                componentName = 'CallExpression (Animated component)';
+              }
+              console.log(`[babel-plugin-kstyled] Matched Case 1: styled(${componentName})\`...\``);
             }
           }
           // Case 2: styled(Component).attrs(...)`...`
@@ -315,14 +382,18 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
           path.node.tag.object.name === state.styledImportName &&
           t.isIdentifier(path.node.tag.property)
         ) {
-          // Create a CallExpression: styled(Component)
-          // The component name is in path.node.tag.property
+          // Import the React Native component
+          const componentName = path.node.tag.property.name;
+          const program = path.findParent((p) => p.isProgram()) as NodePath<t.Program>;
+          const importedComponent = addNamed(program, componentName, 'react-native');
+
+          // Create a CallExpression: styled(ImportedComponent)
           styledCall = t.callExpression(
             t.identifier(state.styledImportName!),
-            [path.node.tag.property]
+            [importedComponent]
           );
           if (opts.debug) {
-            console.log('[babel-plugin-kstyled] Matched Case 3: styled.${path.node.tag.property.name}`...`');
+            console.log(`[babel-plugin-kstyled] Matched Case 3: styled.${componentName}\`...\``);
           }
         }
         // Case 4: styled.View.attrs(...)`...`

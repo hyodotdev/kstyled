@@ -25,5 +25,6 @@ export type {
   VariantsConfig,
   AttrsFunction,
   StyledFunction,
+  StyledFactory,
 } from './types';
 export type { CssResult } from './css';

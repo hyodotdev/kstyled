@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type, @typescript-eslint/no-explicit-any */
 import type { ComponentType, ComponentProps } from 'react';
 import type { ImageStyle, TextStyle, ViewStyle, StyleProp } from 'react-native';
 
@@ -8,8 +9,9 @@ export type RNStyle = ViewStyle | TextStyle | ImageStyle;
 
 /**
  * Style object that can be used in StyleSheet.create
+ * This is a union of all React Native style types
  */
-export type StyleObject = Record<string, any>;
+export type StyleObject = ViewStyle & TextStyle & ImageStyle;
 
 /**
  * Compiled style reference injected by Babel plugin
@@ -22,12 +24,12 @@ export type CompiledStyles = Record<string, number>;
  * Users can extend this via module augmentation
  */
 export interface DefaultTheme {
-  colors?: Record<string, string>;
+  colors: Record<string, string>;
   space?: Record<string, number>;
   radii?: Record<string, number>;
   fontSizes?: Record<string, number>;
   fonts?: Record<string, string>;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -75,7 +77,7 @@ export type StyledComponentProps<
 /**
  * Interpolation function type
  */
-export type Interpolation<P = {}> = (props: P & { theme: DefaultTheme }) => any;
+export type Interpolation<P = {}> = (props: P & { theme: DefaultTheme }) => StyleObject | string | number;
 
 /**
  * Template literal or interpolation array
@@ -112,21 +114,43 @@ export type StyledComponent<
   P = {},
   AttrsP = {}
 > = ComponentType<StyledComponentProps<C, P, AttrsP>> & {
-  attrs<NewAttrs extends Record<string, any>>(
+  attrs<NewAttrs extends Record<string, unknown>>(
     attrs: NewAttrs | AttrsFunction<P & Partial<NewAttrs>>
   ): StyledComponent<C, P, AttrsP & NewAttrs>;
 };
 
 /**
- * Main styled function signature
+ * Styled factory for component shortcuts
+ */
+export interface StyledFactory<C extends ComponentType<any>> {
+  <P = {}>(
+    strings: TemplateStringsArray,
+    ...interpolations: Array<Interpolation<P> | string | number>
+  ): StyledComponent<C, P>;
+}
+
+/**
+ * Main styled function signature with component shortcuts
  */
 export interface StyledFunction {
   <C extends ComponentType<any>, P = {}>(
     component: C
   ): (
     strings: TemplateStringsArray,
-    ...interpolations: Array<any>
+    ...interpolations: Array<Interpolation<P> | string | number>
   ) => StyledComponent<C, P>;
+
+  // Component shortcuts
+  View: StyledFactory<typeof import('react-native').View>;
+  Text: StyledFactory<typeof import('react-native').Text>;
+  Image: StyledFactory<typeof import('react-native').Image>;
+  ScrollView: StyledFactory<typeof import('react-native').ScrollView>;
+  TouchableOpacity: StyledFactory<typeof import('react-native').TouchableOpacity>;
+  Pressable: StyledFactory<typeof import('react-native').Pressable>;
+  TextInput: StyledFactory<typeof import('react-native').TextInput>;
+  SafeAreaView: StyledFactory<typeof import('react-native').SafeAreaView>;
+  FlatList: StyledFactory<typeof import('react-native').FlatList>;
+  SectionList: StyledFactory<typeof import('react-native').SectionList>;
 }
 
 /**
@@ -136,6 +160,6 @@ export interface StyleCombiner {
   (
     compiledStyles: CompiledStyles,
     styleKeys: string[],
-    dynamicStyles?: StyleProp<any>
-  ): StyleProp<any>[];
+    dynamicStyles?: StyleProp<StyleObject>
+  ): StyleProp<StyleObject>[];
 }

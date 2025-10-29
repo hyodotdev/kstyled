@@ -8,6 +8,16 @@ import { styled, ThemeProvider, useTheme } from 'kstyled';
 // Define theme types and use theme values in styled components
 // Access theme anywhere via useTheme() hook
 
+// Example theme interface for custom themes
+export interface AppTheme {
+  colors: {
+    cardBackground: string;
+    border: string;
+    text: string;
+    textSecondary: string;
+  };
+}
+
 const Container = styled(View)`
   flex: 1;
   background-color: #F2F2F7;
@@ -86,7 +96,7 @@ const BadgeText = styled(Text)`
 `;
 
 // Theme-aware components
-const ThemedCard = styled(View)<{ theme: any }>`
+const ThemedCard = styled(View)`
   padding: 16px;
   margin-vertical: 8px;
   border-radius: 12px;
@@ -95,14 +105,14 @@ const ThemedCard = styled(View)<{ theme: any }>`
   border-color: ${(p) => p.theme.colors.border};
 `;
 
-const ThemedCardTitle = styled(Text)<{ theme: any }>`
+const ThemedCardTitle = styled(Text)`
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 8px;
   color: ${(p) => p.theme.colors.text};
 `;
 
-const ThemedCardText = styled(Text)<{ theme: any }>`
+const ThemedCardText = styled(Text)`
   font-size: 14px;
   line-height: 20px;
   color: ${(p) => p.theme.colors.textSecondary};
@@ -182,7 +192,9 @@ const darkTheme: Theme = {
 };
 
 function ThemeExampleContent({ isDark, setIsDark }: { isDark: boolean; setIsDark: (value: boolean) => void }) {
+  // Access theme anywhere with useTheme() hook
   const theme = useTheme();
+  console.log('Current theme:', theme); // For demonstration
 
   return (
     <Container>
@@ -280,20 +292,20 @@ const CardText = styled(Text)<{ theme: Theme }>\`
             </ButtonText>
           </ThemeToggleButton>
 
-          <ThemedCard theme={theme}>
-            <ThemedCardTitle theme={theme}>
+          <ThemedCard>
+            <ThemedCardTitle>
               Themed Card 1
             </ThemedCardTitle>
-            <ThemedCardText theme={theme}>
+            <ThemedCardText>
               This card uses theme.colors.cardBackground, theme.colors.text, and theme.colors.border. Try toggling the theme!
             </ThemedCardText>
           </ThemedCard>
 
-          <ThemedCard theme={theme}>
-            <ThemedCardTitle theme={theme}>
+          <ThemedCard>
+            <ThemedCardTitle>
               Themed Card 2
             </ThemedCardTitle>
-            <ThemedCardText theme={theme}>
+            <ThemedCardText>
               All theme values are type-safe. Your IDE will autocomplete theme.colors.primary, theme.spacing.medium, etc.
             </ThemedCardText>
           </ThemedCard>

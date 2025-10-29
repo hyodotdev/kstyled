@@ -1,6 +1,6 @@
 import { ScrollView, View, Text, Pressable, Image } from 'react-native';
 import { styled } from 'kstyled';
-import { useRouter } from 'expo-router';
+import { useRouter, Href } from 'expo-router';
 import { StyledComponentsIcon, EmotionIcon } from '../src/icons';
 
 const Container = styled(View)`
@@ -186,7 +186,7 @@ export default function HomeScreen() {
           {features.map((feature) => (
             <ExampleCard
               key={feature.id}
-              onPress={() => router.push(feature.route as any)}
+              onPress={() => router.push(feature.route as Href)}
             >
               <ExampleTitle>{feature.title}</ExampleTitle>
               <ExampleDescription>{feature.description}</ExampleDescription>
@@ -206,7 +206,7 @@ export default function HomeScreen() {
           {performance.map((item) => (
             <PerformanceCard
               key={item.id}
-              onPress={() => router.push(item.route as any)}
+              onPress={() => router.push(item.route as Href)}
             >
               {item.icon && <ExampleIcon source={item.icon} />}
               <ExampleContent>

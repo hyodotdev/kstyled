@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Runtime CSS Parser
  * Lightweight CSS-to-RN style converter for fallback mode

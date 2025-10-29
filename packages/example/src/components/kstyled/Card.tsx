@@ -3,6 +3,7 @@ import { View, Text, Pressable, Image, ImageBackground, Alert } from 'react-nati
 import { styled as kstyled } from 'kstyled';
 import type { CardData, StaticCardData } from '../types';
 import { AppIcon } from '../../icons';
+import IconImage from '../../../assets/icon.png';
 
 // Card Container
 export const Card = kstyled(View)<{ $index: number }>`
@@ -343,7 +344,7 @@ export const StaticCardRenderer = ({ data }: { data: StaticCardData }) => (
       imageStyle={{ opacity: 0.15 }}
     >
       <StaticHeader>
-        <CardImage source={require('../../../assets/icon.png')} />
+        <CardImage source={IconImage} />
         <View style={{ flex: 1 }}>
           <StaticTitle>{data.title}</StaticTitle>
           <StaticSubtitle>Static Optimized Component</StaticSubtitle>

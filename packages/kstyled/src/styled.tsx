@@ -1,55 +1,37 @@
 import React, { ComponentType, forwardRef } from 'react';
-import { StyleSheet } from 'react-native';
-import type { StyledComponent, CompiledStyles, AttrsFunction, Interpolation } from './types';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Pressable,
+  TextInput,
+  SafeAreaView,
+  FlatList,
+  SectionList,
+} from 'react-native';
+import type { StyledComponent, CompiledStyles, AttrsFunction } from './types';
+import type { StyleMetadata, StyledFactory, StyleObject, PropsWithTheme, StyleValue, DynamicPatchFunction } from './types/styled-types';
 import { useTheme } from './theme';
 import { parseCSS } from './css-runtime-parser';
-
-/**
- * Metadata injected by Babel plugin
- */
-interface StyleMetadata {
-  compiledStyles?: CompiledStyles;
-  styleKeys?: string[];
-  getDynamicPatch?: (props: any) => any;
-  attrs?: any;
-}
-
-
-/**
- * Factory that returns a styled component builder
- * AttrsP tracks which props were added via .attrs()
- */
-interface StyledFactory<C extends ComponentType<any>, P = {}, AttrsP = {}> {
-  /**
-   * Method called by Babel plugin with extracted styles
-   */
-  __withStyles(metadata: StyleMetadata): StyledComponent<C, P, AttrsP>;
-
-  /**
-   * Method to add default attributes to the component
-   */
-  attrs<NewAttrs extends Record<string, any>>(
-    attrsArg: NewAttrs | AttrsFunction<P & Partial<NewAttrs>>
-  ): StyledFactory<C, P, AttrsP & NewAttrs>;
-
-  /**
-   * Fallback: Called when used as tagged template without Babel transform
-   * This provides runtime parsing as a fallback
-   */
-  (
-    strings: TemplateStringsArray,
-    ...interpolations: Array<Interpolation<P & { theme: import('./types').DefaultTheme }> | string | number>
-  ): StyledComponent<C, P, AttrsP>;
-
-  /**
-   * Allow specifying props type via generic
-   * This enables: styled(View)<{ $active: boolean }>`...`
-   */
-  <NewP = {}>(
-    strings: TemplateStringsArray,
-    ...interpolations: Array<Interpolation<NewP & { theme: import('./types').DefaultTheme }> | string | number>
-  ): StyledComponent<C, NewP, AttrsP>;
-}
+import {
+  extractBaseMetadata,
+  mergeMetadata,
+  createStaticStylesArray,
+  attachMetadata,
+} from './utils/component-metadata';
+import {
+  buildStyleArray,
+  mergeDynamicPatches,
+  createCombinedDynamicPatch,
+} from './utils/style-merger';
+import {
+  filterProps,
+  hasTransientProps,
+  mergeAttrsWithProps,
+} from './utils/props-filter';
 
 /**
  * Main styled function
@@ -68,7 +50,8 @@ interface StyledFactory<C extends ComponentType<any>, P = {}, AttrsP = {}> {
  * `;
  * ```
  */
-export function styled<C extends ComponentType<any>, P = {}, AttrsP = {}>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
+function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
   BaseComponent: C,
   baseAttrs?: AttrsP
 ): StyledFactory<C, P, AttrsP> {
@@ -85,27 +68,29 @@ export function styled<C extends ComponentType<any>, P = {}, AttrsP = {}>(
       attrs,
     } = metadata;
 
-    // Pre-compute static styles array ONCE at component creation time
-    const staticStylesArray = compiledStyles && styleKeys
-      ? styleKeys.map(k => compiledStyles[k])
-      : undefined;
+    // Extract base component's metadata (handles Animated components)
+    const baseMetadata = extractBaseMetadata(BaseComponent);
 
-    const StyledComponent = forwardRef<any, any>((props, ref) => {
-      const Component = props.as || BaseComponent;
+    // Merge parent and child styles
+    const { mergedCompiledStyles, mergedStyleKeys } = mergeMetadata(
+      baseMetadata,
+      { compiledStyles, styleKeys }
+    );
+
+    // Pre-compute static styles array ONCE at component creation time
+    const staticStylesArray = createStaticStylesArray(
+      mergedCompiledStyles,
+      mergedStyleKeys
+    );
+
+    const StyledComponent = forwardRef<unknown, Record<string, unknown>>((props, ref) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const Component = (props.as || BaseComponent) as ComponentType<any>;
 
       // Fast path: static styles only (no dynamic, no attrs, no external style)
       if (!getDynamicPatch && !attrs && !props.style) {
-        // Build minimal props - only filter out transient props
-        const forwardedProps: any = { ref };
-        let hasTransient = false;
-
         // Check if we have any transient props first
-        for (const key in props) {
-          if (key[0] === '$') {
-            hasTransient = true;
-            break;
-          }
-        }
+        const hasTransient = hasTransientProps(props);
 
         // If no transient props, just spread all props (fastest path)
         if (!hasTransient && !props.as && !props.theme) {
@@ -113,63 +98,37 @@ export function styled<C extends ComponentType<any>, P = {}, AttrsP = {}>(
         }
 
         // Otherwise filter props
-        for (const key in props) {
-          if (key[0] !== '$' && key !== 'as' && key !== 'theme') {
-            forwardedProps[key] = props[key];
-          }
-        }
-
+        const forwardedProps = filterProps(props, ref);
         forwardedProps.style = staticStylesArray;
         return <Component {...forwardedProps} />;
       }
 
       // Slow path: dynamic styles, attrs, or external styles
-      const { as: AsComponent, style: externalStyle, ...restProps } = props;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { as: _, style: externalStyle, ...restProps } = props;
       const theme = useTheme();
 
-      // Build final props object with minimal operations
-      const propsWithTheme = { ...restProps, theme };
-      const mergedProps = attrs
-        ? typeof attrs === 'function'
-          ? { ...propsWithTheme, ...attrs(propsWithTheme) }
-          : { ...propsWithTheme, ...attrs }
-        : propsWithTheme;
+      // Build final props with theme
+      const propsWithTheme: PropsWithTheme = { ...restProps, theme };
+      const mergedProps = mergeAttrsWithProps(attrs, propsWithTheme);
 
-      // Compute dynamic patch if exists
-      const dynamicPatch = getDynamicPatch ? getDynamicPatch(mergedProps) : null;
+      // Compute and merge dynamic patches
+      const dynamicPatch = mergeDynamicPatches(
+        baseMetadata,
+        getDynamicPatch,
+        mergedProps
+      );
 
-      // Build style array efficiently
-      const styles: any[] = [];
+      // Build style array with correct priority
+      const styles = buildStyleArray(
+        compiledStyles,
+        styleKeys,
+        dynamicPatch,
+        externalStyle as StyleValue
+      );
 
-      // Add external styles first
-      if (externalStyle) {
-        if (Array.isArray(externalStyle)) {
-          styles.push(...externalStyle);
-        } else {
-          styles.push(externalStyle);
-        }
-      }
-
-      // Add compiled static styles (pre-created by StyleSheet.create)
-      if (compiledStyles && styleKeys) {
-        for (let i = 0; i < styleKeys.length; i++) {
-          styles.push(compiledStyles[styleKeys[i]]);
-        }
-      }
-
-      // Add dynamic patch
-      if (dynamicPatch) {
-        styles.push(dynamicPatch);
-      }
-
-      // Filter props efficiently (inline to avoid extra function call)
-      const forwardedProps: any = { ref };
-      for (const key in restProps) {
-        // Skip transient props ($), 'as', and 'theme'
-        if (key[0] !== '$' && key !== 'as' && key !== 'theme') {
-          forwardedProps[key] = restProps[key];
-        }
-      }
+      // Filter props and add styles
+      const forwardedProps = filterProps(restProps, ref);
       forwardedProps.style = styles;
 
       return <Component {...forwardedProps} />;
@@ -180,27 +139,54 @@ export function styled<C extends ComponentType<any>, P = {}, AttrsP = {}>(
       BaseComponent.displayName || BaseComponent.name || 'Component'
     })`;
 
-    // Add attrs method
-    const ComponentWithMethods = StyledComponent as any;
+    // Add attrs method and metadata to the component
+    type ComponentWithMethods = typeof StyledComponent & {
+      attrs: <NewAttrs extends Record<string, unknown>>(
+        attrsArg: NewAttrs | AttrsFunction<P & Partial<NewAttrs>>
+      ) => StyledComponent<C, P, AttrsP & NewAttrs>;
+      __kstyled_metadata__?: StyleMetadata;
+    };
 
-    ComponentWithMethods.attrs = function <NewAttrs extends Record<string, any>>(
+    const StyledWithMethods = StyledComponent as ComponentWithMethods;
+
+    StyledWithMethods.attrs = function <NewAttrs extends Record<string, unknown>>(
       attrsArg: NewAttrs | AttrsFunction<P & Partial<NewAttrs>>
     ): StyledComponent<C, P, AttrsP & NewAttrs> {
       return createStyledComponent({
         ...metadata,
-        attrs: attrsArg,
-      }) as any;
+        attrs: attrsArg as Record<string, unknown>,
+      });
     };
 
-    return ComponentWithMethods as StyledComponent<C, P, AttrsP>;
+    // Store merged metadata for inheritance
+    const combinedGetDynamicPatch = createCombinedDynamicPatch(
+      baseMetadata,
+      getDynamicPatch
+    );
+
+    attachMetadata(
+      StyledWithMethods,
+      {
+        compiledStyles: mergedCompiledStyles,
+        styleKeys: mergedStyleKeys,
+        getDynamicPatch: combinedGetDynamicPatch,
+        attrs,
+      },
+      BaseComponent
+    );
+
+    return StyledWithMethods as StyledComponent<C, P, AttrsP>;
   }
 
   /**
    * Factory function returned by styled()
+   * Handles runtime fallback when Babel plugin is not available
    */
-  const factory: any = function (strings: TemplateStringsArray, ...interpolations: any[]) {
+  const factory = function (
+    strings: TemplateStringsArray,
+    ...interpolations: Array<string | number | ((props: Record<string, unknown>) => StyleObject | string | number)>
+  ): StyledComponent<C, P, AttrsP> {
     // Runtime fallback: parse template literal at runtime
-    // This is used when Babel plugin is not available
     console.warn(
       '[kstyled] Runtime parsing is not recommended. Please enable babel-plugin-kstyled for better performance.'
     );
@@ -210,15 +196,15 @@ export function styled<C extends ComponentType<any>, P = {}, AttrsP = {}>(
 
     // Create StyleSheet from static styles
     const compiledStyles = Object.keys(staticStyles).length > 0
-      ? (StyleSheet.create({ base: staticStyles }) as any as CompiledStyles)
+      ? (StyleSheet.create({ base: staticStyles }) as unknown as CompiledStyles)
       : undefined;
 
     // Create metadata
     const metadata: StyleMetadata = {
       compiledStyles,
       styleKeys: compiledStyles ? ['base'] : undefined,
-      getDynamicPatch: dynamicGetter || undefined,
-      attrs: baseAttrs,
+      getDynamicPatch: dynamicGetter as DynamicPatchFunction | undefined,
+      attrs: baseAttrs as Record<string, unknown>,
     };
 
     return createStyledComponent(metadata);
@@ -230,16 +216,19 @@ export function styled<C extends ComponentType<any>, P = {}, AttrsP = {}>(
   factory.__withStyles = function (
     metadata: StyleMetadata
   ): StyledComponent<C, P> {
-    return createStyledComponent({ ...metadata, attrs: baseAttrs });
+    return createStyledComponent({ ...metadata, attrs: baseAttrs as Record<string, unknown> });
   };
 
   /**
    * Method to add default attributes before template literal
    */
-  factory.attrs = function <NewAttrs extends Record<string, any>>(
+  factory.attrs = function <NewAttrs extends Record<string, unknown>>(
     attrsArg: NewAttrs | AttrsFunction<P & Partial<NewAttrs>>
   ): StyledFactory<C, P, AttrsP & NewAttrs> {
-    return styled<C, P, AttrsP & NewAttrs>(BaseComponent, attrsArg as any);
+    return styledFunction<C, P, AttrsP & NewAttrs>(
+      BaseComponent,
+      attrsArg as AttrsP & NewAttrs
+    );
   };
 
   return factory as StyledFactory<C, P, AttrsP>;
@@ -250,11 +239,40 @@ export function styled<C extends ComponentType<any>, P = {}, AttrsP = {}>(
  * This is kept for backward compatibility with old Babel plugin
  */
 export function __injectKStyledMetadata(
-  component: any,
+  component: ComponentType<unknown>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _metadata: StyleMetadata
-): any {
+): ComponentType<unknown> {
   console.warn(
     '[kstyled] __injectKStyledMetadata is deprecated. Please update babel-plugin-kstyled.'
   );
   return component;
 }
+
+// Add styled.View, styled.Text, etc. shortcuts and export
+
+type StyledShortcuts = {
+  View: ReturnType<typeof styledFunction<typeof View>>;
+  Text: ReturnType<typeof styledFunction<typeof Text>>;
+  Image: ReturnType<typeof styledFunction<typeof Image>>;
+  ScrollView: ReturnType<typeof styledFunction<typeof ScrollView>>;
+  TouchableOpacity: ReturnType<typeof styledFunction<typeof TouchableOpacity>>;
+  Pressable: ReturnType<typeof styledFunction<typeof Pressable>>;
+  TextInput: ReturnType<typeof styledFunction<typeof TextInput>>;
+  SafeAreaView: ReturnType<typeof styledFunction<typeof SafeAreaView>>;
+  FlatList: ReturnType<typeof styledFunction<typeof FlatList>>;
+  SectionList: ReturnType<typeof styledFunction<typeof SectionList>>;
+};
+
+export const styled = Object.assign(styledFunction, {
+  View: styledFunction(View),
+  Text: styledFunction(Text),
+  Image: styledFunction(Image),
+  ScrollView: styledFunction(ScrollView),
+  TouchableOpacity: styledFunction(TouchableOpacity),
+  Pressable: styledFunction(Pressable),
+  TextInput: styledFunction(TextInput),
+  SafeAreaView: styledFunction(SafeAreaView),
+  FlatList: styledFunction(FlatList),
+  SectionList: styledFunction(SectionList),
+}) as typeof styledFunction & StyledShortcuts;
