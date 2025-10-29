@@ -266,23 +266,134 @@ bun run dev
 
 (For maintainers)
 
-```bash
-# 1. Build and test
-pnpm build && pnpm typecheck && pnpm test
+### Publishing a New Version
 
-# 2. Login to npm
-npm login
+1. **Update package versions**
 
-# 3. Publish (dry-run first)
-pnpm publish:dry
-pnpm publish:packages
+   **Option A: Automatic (Recommended)**
 
-# 4. Create git tag
-git tag v0.1.0
-git push origin v0.1.0
-```
+   Use the version scripts to automatically bump versions in both packages:
 
-**Version updates**: Manually edit version in `packages/kstyled/package.json` and `packages/babel-plugin-kstyled/package.json`
+   ```bash
+   pnpm version:patch  # 0.1.2 → 0.1.3 (bug fixes)
+   pnpm version:minor  # 0.1.3 → 0.2.0 (new features)
+   pnpm version:major  # 0.2.0 → 1.0.0 (breaking changes)
+   ```
+
+   This updates both `kstyled` and `babel-plugin-kstyled` at once.
+
+   **Option B: Manual**
+
+   Manually edit version in both packages:
+   - `packages/kstyled/package.json`
+   - `packages/babel-plugin-kstyled/package.json`
+
+   Example: `"version": "0.1.3"`
+
+   > **Note**: The root `package.json` version is for development only and doesn't affect npm publishing.
+
+2. **Build and test everything**
+
+   ```bash
+   pnpm build && pnpm typecheck && pnpm lint
+   ```
+
+   Make sure all checks pass with 0 errors.
+
+3. **Commit version changes**
+
+   ```bash
+   git add packages/*/package.json
+   git commit -m "chore: bump version to 0.1.3"
+   ```
+
+4. **Verify npm login**
+
+   ```bash
+   npm whoami
+   # Should display your npm username
+   ```
+
+   If not logged in:
+
+   ```bash
+   npm login
+   ```
+
+5. **Test publish (dry-run)**
+
+   ```bash
+   pnpm publish:dry
+   ```
+
+   This shows what would be published without actually publishing. Check:
+   - Package sizes look reasonable
+   - File list is correct
+   - No unexpected files included
+
+6. **Publish to npm**
+
+   ```bash
+   pnpm publish:packages
+   ```
+
+   This publishes both `kstyled` and `babel-plugin-kstyled` to npm with public access.
+
+7. **Create and push git tag**
+
+   ```bash
+   git tag v0.1.3
+   git push
+   git push --tags
+   ```
+
+8. **Verify publication**
+
+   ```bash
+   npm view kstyled version
+   npm view babel-plugin-kstyled version
+   # Both should show the new version
+   ```
+
+### Troubleshooting Publishing
+
+#### "There are no new packages that should be published"
+
+This means the version in package.json already exists on npm. You need to:
+
+1. Bump the version in both packages
+2. Commit the version change
+3. Try publishing again
+
+#### "ERR_PNPM_GIT_NOT_LATEST"
+
+Your local git history differs from remote. Either:
+
+- Pull latest changes: `git pull`
+- Or use force push (be careful!): `git push --force`
+
+#### "ERR_PNPM_GIT_UNCLEAN"
+
+You have uncommitted changes. Either:
+
+- Commit your changes first
+- Or add `--no-git-checks` flag (not recommended)
+
+### Version Guidelines
+
+Follow semantic versioning:
+
+- **Patch** (0.1.x): Bug fixes, small improvements
+- **Minor** (0.x.0): New features, non-breaking changes
+- **Major** (x.0.0): Breaking changes
+
+Example version history:
+
+- `0.1.0` - Initial release
+- `0.1.1` - Bug fixes
+- `0.1.2` - Add new feature (backwards compatible)
+- `0.2.0` - Add breaking API changes
+- `1.0.0` - Stable release
 
 ## Troubleshooting
 
