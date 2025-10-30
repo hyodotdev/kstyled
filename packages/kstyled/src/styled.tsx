@@ -269,35 +269,57 @@ type StyledShortcuts = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const styledShortcuts: Record<string, ReturnType<typeof styledFunction<ComponentType<any>>>> = {};
 
-export const styled = Object.assign(styledFunction, {
-  get View() {
-    return styledShortcuts.View || (styledShortcuts.View = styledFunction(View));
-  },
-  get Text() {
-    return styledShortcuts.Text || (styledShortcuts.Text = styledFunction(Text));
-  },
-  get Image() {
-    return styledShortcuts.Image || (styledShortcuts.Image = styledFunction(Image));
-  },
-  get ScrollView() {
-    return styledShortcuts.ScrollView || (styledShortcuts.ScrollView = styledFunction(ScrollView));
-  },
-  get TouchableOpacity() {
-    return styledShortcuts.TouchableOpacity || (styledShortcuts.TouchableOpacity = styledFunction(TouchableOpacity));
-  },
-  get Pressable() {
-    return styledShortcuts.Pressable || (styledShortcuts.Pressable = styledFunction(Pressable));
-  },
-  get TextInput() {
-    return styledShortcuts.TextInput || (styledShortcuts.TextInput = styledFunction(TextInput));
-  },
-  get SafeAreaView() {
-    return styledShortcuts.SafeAreaView || (styledShortcuts.SafeAreaView = styledFunction(SafeAreaView));
-  },
-  get FlatList() {
-    return styledShortcuts.FlatList || (styledShortcuts.FlatList = styledFunction(FlatList));
-  },
-  get SectionList() {
-    return styledShortcuts.SectionList || (styledShortcuts.SectionList = styledFunction(SectionList));
-  },
-}) as typeof styledFunction & StyledShortcuts;
+// Create the styled object with lazy getters using defineProperty
+export const styled = styledFunction as typeof styledFunction & StyledShortcuts;
+
+// Define lazy getters for each component to avoid eager module loading
+Object.defineProperty(styled, 'View', {
+  get() { return styledShortcuts.View || (styledShortcuts.View = styledFunction(View)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'Text', {
+  get() { return styledShortcuts.Text || (styledShortcuts.Text = styledFunction(Text)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'Image', {
+  get() { return styledShortcuts.Image || (styledShortcuts.Image = styledFunction(Image)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'ScrollView', {
+  get() { return styledShortcuts.ScrollView || (styledShortcuts.ScrollView = styledFunction(ScrollView)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'TouchableOpacity', {
+  get() { return styledShortcuts.TouchableOpacity || (styledShortcuts.TouchableOpacity = styledFunction(TouchableOpacity)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'Pressable', {
+  get() { return styledShortcuts.Pressable || (styledShortcuts.Pressable = styledFunction(Pressable)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'TextInput', {
+  get() { return styledShortcuts.TextInput || (styledShortcuts.TextInput = styledFunction(TextInput)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'SafeAreaView', {
+  get() { return styledShortcuts.SafeAreaView || (styledShortcuts.SafeAreaView = styledFunction(SafeAreaView)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'FlatList', {
+  get() { return styledShortcuts.FlatList || (styledShortcuts.FlatList = styledFunction(FlatList)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'SectionList', {
+  get() { return styledShortcuts.SectionList || (styledShortcuts.SectionList = styledFunction(SectionList)); },
+  enumerable: true,
+  configurable: true
+});
