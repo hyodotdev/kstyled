@@ -168,7 +168,8 @@ export function parseCSSValue(value: string): any {
     return trimmed;
   }
 
-  // Number with unit (px, em, rem) - strip unit and convert to number
+  // Number with optional unit (px, em, rem) or unitless - strip unit and convert to number
+  // Supports: 16, 16px, 1.5, 1.5em, -10, -10px
   if (/^-?\d+(\.\d+)?(px|em|rem)?$/.test(trimmed)) {
     const num = parseFloat(trimmed);
     return isNaN(num) ? trimmed : num;
