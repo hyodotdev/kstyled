@@ -264,15 +264,40 @@ type StyledShortcuts = {
   SectionList: ReturnType<typeof styledFunction<typeof SectionList>>;
 };
 
+// Lazy initialization of styled shortcuts to avoid importing
+// FlatList/SectionList at module load time (prevents Platform.OS issues in tests)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const styledShortcuts: Record<string, ReturnType<typeof styledFunction<ComponentType<any>>>> = {};
+
 export const styled = Object.assign(styledFunction, {
-  View: styledFunction(View),
-  Text: styledFunction(Text),
-  Image: styledFunction(Image),
-  ScrollView: styledFunction(ScrollView),
-  TouchableOpacity: styledFunction(TouchableOpacity),
-  Pressable: styledFunction(Pressable),
-  TextInput: styledFunction(TextInput),
-  SafeAreaView: styledFunction(SafeAreaView),
-  FlatList: styledFunction(FlatList),
-  SectionList: styledFunction(SectionList),
+  get View() {
+    return styledShortcuts.View || (styledShortcuts.View = styledFunction(View));
+  },
+  get Text() {
+    return styledShortcuts.Text || (styledShortcuts.Text = styledFunction(Text));
+  },
+  get Image() {
+    return styledShortcuts.Image || (styledShortcuts.Image = styledFunction(Image));
+  },
+  get ScrollView() {
+    return styledShortcuts.ScrollView || (styledShortcuts.ScrollView = styledFunction(ScrollView));
+  },
+  get TouchableOpacity() {
+    return styledShortcuts.TouchableOpacity || (styledShortcuts.TouchableOpacity = styledFunction(TouchableOpacity));
+  },
+  get Pressable() {
+    return styledShortcuts.Pressable || (styledShortcuts.Pressable = styledFunction(Pressable));
+  },
+  get TextInput() {
+    return styledShortcuts.TextInput || (styledShortcuts.TextInput = styledFunction(TextInput));
+  },
+  get SafeAreaView() {
+    return styledShortcuts.SafeAreaView || (styledShortcuts.SafeAreaView = styledFunction(SafeAreaView));
+  },
+  get FlatList() {
+    return styledShortcuts.FlatList || (styledShortcuts.FlatList = styledFunction(FlatList));
+  },
+  get SectionList() {
+    return styledShortcuts.SectionList || (styledShortcuts.SectionList = styledFunction(SectionList));
+  },
 }) as typeof styledFunction & StyledShortcuts;
