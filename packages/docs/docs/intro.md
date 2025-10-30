@@ -46,7 +46,6 @@ Static styles are extracted at compile time, while dynamic prop-based styles rem
 | Feature | kstyled | styled-components | emotion |
 |---------|---------|-------------------|---------|
 | Runtime overhead | Zero | High | Medium-High |
-| Bundle size | ~260 lines | ~8000 lines | ~6000 lines |
 | Build-time CSS validation | ✅ | ❌ | ⚠️ (with plugin) |
 | StyleSheet.create | ✅ | ❌ | ❌ |
 | API familiarity | styled-components | ✅ | Similar |
