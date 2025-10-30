@@ -34,38 +34,6 @@ interface CssFactory {
 }
 
 /**
- * Compute css styles
- * Note: We don't use useMemo here because this is evaluated at module level,
- * and the dynamic patch is re-evaluated on each render naturally
- */
-function computeCssStyles(
-  compiledStyles: CompiledStyles | undefined,
-  styleKeys: string[] | undefined,
-  getDynamicPatch: ((props: any) => any) | undefined
-): any[] {
-  const styles: any[] = [];
-
-  // Add compiled (static) styles
-  if (compiledStyles && styleKeys) {
-    for (const key of styleKeys) {
-      if (key in compiledStyles) {
-        styles.push(compiledStyles[key]);
-      }
-    }
-  }
-
-  // Add dynamic patch
-  if (getDynamicPatch) {
-    const dynamicPatch = getDynamicPatch({});
-    if (dynamicPatch) {
-      styles.push(dynamicPatch);
-    }
-  }
-
-  return styles;
-}
-
-/**
  * css`` tagged template helper
  * Provides optimized inline styles similar to emotion's css``
  *
@@ -187,6 +155,10 @@ export const css: CssFactory = Object.assign(
         else if (value.endsWith('px')) {
           styleObj[camelProp] = parseFloat(value);
         }
+        // Parse unitless numeric values (e.g., flex: 1, opacity: 0.5)
+        else if (/^-?\d+(\.\d+)?$/.test(value)) {
+          styleObj[camelProp] = parseFloat(value);
+        }
         // Keep string values as-is
         else {
           styleObj[camelProp] = value;
@@ -206,10 +178,29 @@ export const css: CssFactory = Object.assign(
     __withStyles: function (metadata: CssMetadata): any[] {
       const { compiledStyles, styleKeys, getDynamicPatch } = metadata;
 
-      // IMPORTANT: Call computeCssStyles every time this array is used
-      // This ensures dynamic values are re-computed on each render
-      // The getDynamicPatch function captures closure variables from the template literal
-      return computeCssStyles(compiledStyles, styleKeys, getDynamicPatch);
+      const styles: any[] = [];
+
+      // Add compiled (static) styles
+      if (compiledStyles && styleKeys) {
+        for (const key of styleKeys) {
+          if (key in compiledStyles) {
+            styles.push(compiledStyles[key]);
+          }
+        }
+      }
+
+      // Add dynamic patch
+      // IMPORTANT: getDynamicPatch({}) is evaluated immediately here
+      // The dynamic values are captured in the closure when Babel plugin creates this function
+      // So SCREEN_WIDTH and other module-level constants work correctly
+      if (getDynamicPatch) {
+        const dynamicPatch = getDynamicPatch({});
+        if (dynamicPatch && Object.keys(dynamicPatch).length > 0) {
+          styles.push(dynamicPatch);
+        }
+      }
+
+      return styles;
     },
   }
 );

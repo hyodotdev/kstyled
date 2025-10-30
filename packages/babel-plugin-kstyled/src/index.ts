@@ -463,11 +463,39 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
           // Collect dynamic properties
           const dynamicProps: Array<{ key: string; placeholder: string }> = [];
 
+          if (opts.debug) {
+            console.log('[babel-plugin-kstyled] Checking for dynamic props in parsed.static:');
+            for (const [key, value] of Object.entries(parsed.static)) {
+              console.log(`[babel-plugin-kstyled]   ${key}: ${JSON.stringify(value)} (type: ${typeof value})`);
+            }
+            console.log('[babel-plugin-kstyled] parsed.dynamic:', parsed.dynamic);
+          }
+
+          // First, collect from parsed.static (edge case where __EXPR_ ends up in static)
           for (const [key, value] of Object.entries(parsed.static)) {
             if (typeof value === 'string' && value.includes('__EXPR_')) {
+              if (opts.debug) {
+                console.log(`[babel-plugin-kstyled]   → Moving ${key} from static to dynamicProps`);
+              }
               dynamicProps.push({ key, placeholder: value });
               delete parsed.static[key];
             }
+          }
+
+          // Then, collect from parsed.dynamic (main source of dynamic values)
+          for (const dynamicStyle of parsed.dynamic) {
+            for (const [key, value] of Object.entries(dynamicStyle.properties)) {
+              if (typeof value === 'string' && value.includes('__EXPR_')) {
+                if (opts.debug) {
+                  console.log(`[babel-plugin-kstyled]   → Adding ${key} from dynamic to dynamicProps`);
+                }
+                dynamicProps.push({ key, placeholder: value });
+              }
+            }
+          }
+
+          if (opts.debug) {
+            console.log('[babel-plugin-kstyled] Final dynamicProps:', dynamicProps);
           }
 
           // Generate AST nodes

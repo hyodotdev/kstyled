@@ -1,6 +1,6 @@
 {
   "name": "kstyled",
-  "version": "0.1.4",
+  "version": "0.0.0",
   "private": true,
   "description": "Zero-runtime styled-components for React Native - Build-time style extraction with StyleSheet performance",
   "keywords": [
@@ -29,6 +29,7 @@
     "clean": "turbo run clean && rm -rf node_modules .turbo",
     "bun:install": "bun install",
     "kstyled:copy": "cd packages/babel-plugin-kstyled && pnpm build && cp -r dist/* /Users/hyo/Github/crossplatformkorea/cpk-ui/node_modules/babel-plugin-kstyled/dist/ && cd ../kstyled && pnpm build && cp -r dist/* /Users/hyo/Github/crossplatformkorea/cpk-ui/node_modules/kstyled/dist/ && echo '✅ kstyled packages copied to cpk-ui! Restart Metro/Storybook to apply changes.'",
+    "kstyled:copy2": "cd packages/babel-plugin-kstyled && pnpm build && cp -r dist/* /Users/hyo/Github/hyodotdev/Petgu/node_modules/babel-plugin-kstyled/dist/ && cd ../kstyled && pnpm build && cp -r dist/* /Users/hyo/Github/hyodotdev/Petgu/node_modules/kstyled/dist/ && echo '✅ kstyled packages copied to Petgu! Restart Metro/Storybook to apply changes.'",
     "bun:build": "bun run build",
     "bun:dev": "bun run dev",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
