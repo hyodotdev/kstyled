@@ -216,6 +216,13 @@ function expandShorthand(property: string, value: string): Record<string, any> |
         paddingVertical: parts[0],
         paddingHorizontal: parts[1],
       };
+    } else if (parts.length === 3) {
+      // padding: top horizontal bottom
+      return {
+        paddingTop: parts[0],
+        paddingHorizontal: parts[1],
+        paddingBottom: parts[2],
+      };
     } else if (parts.length === 4) {
       // padding: top right bottom left
       return {
@@ -231,6 +238,13 @@ function expandShorthand(property: string, value: string): Record<string, any> |
       return {
         marginVertical: parts[0],
         marginHorizontal: parts[1],
+      };
+    } else if (parts.length === 3) {
+      // margin: top horizontal bottom
+      return {
+        marginTop: parts[0],
+        marginHorizontal: parts[1],
+        marginBottom: parts[2],
       };
     } else if (parts.length === 4) {
       // margin: top right bottom left
