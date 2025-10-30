@@ -163,6 +163,13 @@ export function cssToRNProperty(cssProperty: string): string {
 export function parseCSSValue(value: string): any {
   const trimmed = value.trim();
 
+  // Handle placeholder with units: __EXPR_0__px -> __EXPR_0__
+  // In React Native, numeric values don't use units
+  if (/__EXPR_\d+__/.test(trimmed)) {
+    // Remove common CSS units from placeholders
+    return trimmed.replace(/(px|em|rem|pt|vh|vw|%)$/i, '');
+  }
+
   // Percentage values must remain as strings in React Native
   if (trimmed.endsWith('%')) {
     return trimmed;
@@ -243,7 +250,7 @@ function expandShorthand(property: string, value: string): Record<string, any> |
  * Check if a value contains interpolation placeholder
  */
 export function isDynamicValue(value: string): boolean {
-  return value.includes('__INTERPOLATION_');
+  return value.includes('__INTERPOLATION_') || value.includes('__EXPR_');
 }
 
 /**
@@ -301,8 +308,10 @@ export function parseCSS(css: string): StyleRule {
 
     if (isDynamic) {
       // Dynamic value - will be computed at runtime
+      // Strip units from placeholders (__EXPR_0__px -> __EXPR_0__)
+      const processedValue = parseCSSValue(value);
       dynamicStyles.push({
-        properties: { [rnProperty]: value },
+        properties: { [rnProperty]: processedValue },
       });
     } else {
       // Check if this is a shorthand property (use original property name)
