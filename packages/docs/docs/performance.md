@@ -10,15 +10,16 @@ kstyled transforms styles at compile time, resulting in zero runtime overhead co
 
 ### Bundle size comparison
 
-| Library | Bundle Size (minified) | Packages Required |
-|---------|----------------------|-------------------|
-| **kstyled** | ~10 KB | 1 package: `kstyled` |
-| **@emotion/native** | ~13-18 KB | 3 packages: `@emotion/native` + `@emotion/primitives-core` + `@emotion/react`* |
-| **styled-components/native** | ~21 KB | 1 package: `styled-components` (includes both web & native) |
+| Library                      | Bundle Size (minified) | Packages Required                                                               |
+| ---------------------------- | ---------------------- | ------------------------------------------------------------------------------- |
+| **kstyled**                  | ~10 KB                 | 1 package: `kstyled`                                                            |
+| **@emotion/native**          | ~13-18 KB              | 3 packages: `@emotion/native` + `@emotion/primitives-core` + `@emotion/react`\* |
+| **styled-components/native** | ~21 KB                 | 1 package: `styled-components` (includes both web & native)                     |
 
-*\*@emotion/react is a required peer dependency for @emotion/native to work*
+_\*@emotion/react is a required peer dependency for @emotion/native to work_
 
 **Key insights:**
+
 - **kstyled is the smallest** at ~10 KB with everything in one package
 - **@emotion/native requires 3 separate packages** totaling ~13-18 KB:
   - `@emotion/native`: ~1 KB (just a wrapper)
@@ -30,7 +31,7 @@ kstyled transforms styles at compile time, resulting in zero runtime overhead co
   - Includes both web and native in the same npm package
   - Use `styled-components/native` import path for React Native
 
-*Additional note: styled-components and emotion also depend on `css-to-react-native` (~25 KB) for runtime CSS parsing.*
+_Additional note: styled-components and emotion also depend on `css-to-react-native` (~25 KB) for runtime CSS parsing._
 
 ### Rendering performance
 
@@ -62,7 +63,7 @@ const Item = styled(View)`
 <FlatList
   data={items}
   renderItem={({ item }) => <Item>{item.content}</Item>}
-/>
+/>;
 ```
 
 ### Static-heavy components
@@ -110,13 +111,13 @@ const Button = styled(Pressable)<{ $primary?: boolean }>`
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
-  background-color: ${p => p.$primary ? '#007AFF' : '#ccc'};
+  background-color: ${(p) => (p.$primary ? '#007AFF' : '#ccc')};
 `;
 
 // Less optimal - everything dynamic
 const Button = styled(Pressable)<{ $padding?: number; $radius?: number }>`
-  padding: ${p => p.$padding || 12}px;
-  border-radius: ${p => p.$radius || 8}px;
+  padding: ${(p) => p.$padding || 12}px;
+  border-radius: ${(p) => p.$radius || 8}px;
 `;
 ```
 
@@ -131,11 +132,7 @@ const Item = styled(View)`
 `;
 
 function MyItem({ color }: { color: string }) {
-  return (
-    <Item style={{ backgroundColor: color }}>
-      {/* ... */}
-    </Item>
-  );
+  return <Item style={{ backgroundColor: color }}>{/* ... */}</Item>;
 }
 ```
 
@@ -151,7 +148,7 @@ const getButtonColor = (variant: string) => {
 
 const Button = styled(Pressable)<{ $variant: string }>`
   padding: 12px;
-  background-color: ${p => getButtonColor(p.$variant)};
+  background-color: ${(p) => getButtonColor(p.$variant)};
 `;
 
 // Consider memoizing or pre-computing
@@ -193,13 +190,13 @@ Below are real benchmark results from our test app rendering 50 complex cards:
 
 </details>
 
-| Metric | kstyled | emotion |
-|--------|---------|---------|
-| **Median** | **477.74ms** | **561.23ms** |
-| Mean | 482.43ms | 565.34ms |
-| Min / Max | 476.66ms / 494.44ms | 544.33ms / 592.24ms |
-| P95 | 494.15ms | 585.37ms |
-| Std Dev | ±7.55ms | ±12.32ms |
+| Metric     | kstyled             | emotion             |
+| ---------- | ------------------- | ------------------- |
+| **Median** | **477.74ms**        | **561.23ms**        |
+| Mean       | 482.43ms            | 565.34ms            |
+| Min / Max  | 476.66ms / 494.44ms | 544.33ms / 592.24ms |
+| P95        | 494.15ms            | 585.37ms            |
+| Std Dev    | ±7.55ms             | ±12.32ms            |
 
 **Result: 14.9% faster** ⚡
 
@@ -216,13 +213,13 @@ Below are real benchmark results from our test app rendering 50 complex cards:
 
 </details>
 
-| Metric | kstyled | styled-components |
-|--------|---------|-------------------|
-| **Median** | **182.94ms** | **199.47ms** |
-| Mean | 186.21ms | 193.26ms |
-| Min / Max | 182.37ms / 215.84ms | 182.33ms / 201.51ms |
-| P95 | 201.20ms | 200.82ms |
-| Std Dev | ±9.88ms | ±8.35ms |
+| Metric     | kstyled             | styled-components   |
+| ---------- | ------------------- | ------------------- |
+| **Median** | **182.94ms**        | **199.47ms**        |
+| Mean       | 186.21ms            | 193.26ms            |
+| Min / Max  | 182.37ms / 215.84ms | 182.33ms / 201.51ms |
+| P95        | 201.20ms            | 200.82ms            |
+| Std Dev    | ±9.88ms             | ±8.35ms             |
 
 **Result: 8.3% faster** ⚡
 
@@ -231,6 +228,7 @@ Below are real benchmark results from our test app rendering 50 complex cards:
 </div>
 
 **Test configuration:**
+
 - 50 cards per benchmark
 - 10 iterations per library (3 warm-up iterations discarded)
 - Randomized order each iteration
@@ -247,17 +245,17 @@ The performance advantage comes from **build-time optimization**:
 const Box = styled(View)`
   padding: 16px;
   border-radius: 12px;
-  background-color: ${p => p.$selected ? '#007AFF' : '#FFF'};
+  background-color: ${(p) => (p.$selected ? '#007AFF' : '#FFF')};
 `;
 
 // Is compiled at build time to:
 const styles = StyleSheet.create({
-  s0: { padding: 16, borderRadius: 12 }
+  s0: { padding: 16, borderRadius: 12 },
 });
 
 const Box = (props) => {
   const dynamicStyle = {
-    backgroundColor: props.$selected ? '#007AFF' : '#FFF'
+    backgroundColor: props.$selected ? '#007AFF' : '#FFF',
   };
   return <View style={[styles.s0, dynamicStyle]} {...props} />;
 };
@@ -274,9 +272,12 @@ const Box = (props) => {
 ### Performance characteristics
 
 The **8-15% improvement** is consistent across different types of components:
+
 - Components with mostly static styles benefit from build-time compilation
 - Components with dynamic styles still benefit from faster component instantiation and lighter runtime overhead
 - The improvement is most noticeable when rendering many components (e.g., long lists)
+
+**Note on real-world impact**: While our simple benchmark shows an 8-15% performance improvement, **more complex components with deeper nesting, multiple dynamic props, and heavy style computations can see even larger performance gains**. The compile-time optimization becomes increasingly beneficial as component complexity grows, since kstyled eliminates all CSS parsing overhead regardless of style complexity.
 
 ### Important notes
 
