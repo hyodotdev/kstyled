@@ -83,8 +83,9 @@ function parseValue(value: string): any {
     return trimmed;
   }
 
-  // Parse number (with or without px)
-  if (/^-?\d+(\.\d+)?(px)?$/.test(trimmed)) {
+  // Parse number with optional unit (px, em, rem) or unitless
+  // Supports: 16, 16px, 1.5, 1.5em, -10, -10px
+  if (/^-?\d+(\.\d+)?(px|em|rem)?$/.test(trimmed)) {
     return parseFloat(trimmed);
   }
 

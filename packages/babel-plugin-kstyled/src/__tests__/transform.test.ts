@@ -550,5 +550,66 @@ describe('babel-plugin-kstyled', () => {
       expect(output).toContain('"10%"');
       expect(output).toContain('"5%"');
     });
+
+    test('should support unitless numbers', () => {
+      const input = `
+        import { styled } from 'kstyled';
+        import { View } from 'react-native';
+
+        const Box = styled(View)\`
+          padding: 16;
+          margin: 8;
+          border-radius: 12;
+          opacity: 0.5;
+        \`;
+      `;
+
+      const output = transform(input);
+      expect(output).toContain('padding: 16');
+      expect(output).toContain('margin: 8');
+      expect(output).toContain('borderRadius: 12');
+      expect(output).toContain('opacity: 0.5');
+    });
+
+    test('should support mixed unitless and px values', () => {
+      const input = `
+        import { styled } from 'kstyled';
+        import { View } from 'react-native';
+
+        const Mixed = styled(View)\`
+          padding: 16px 24;
+          margin: 8 12px;
+          border-radius: 8;
+          border-width: 1px;
+        \`;
+      `;
+
+      const output = transform(input);
+      // Should expand shorthand with mixed units
+      expect(output).toContain('paddingVertical');
+      expect(output).toContain('paddingHorizontal');
+      expect(output).toContain('marginVertical');
+      expect(output).toContain('marginHorizontal');
+      expect(output).toContain('borderRadius');
+      expect(output).toContain('borderWidth');
+    });
+
+    test('should support negative unitless numbers', () => {
+      const input = `
+        import { styled } from 'kstyled';
+        import { View } from 'react-native';
+
+        const Negative = styled(View)\`
+          margin-top: -10;
+          margin-left: -5px;
+          top: -20;
+        \`;
+      `;
+
+      const output = transform(input);
+      expect(output).toContain('marginTop: -10');
+      expect(output).toContain('marginLeft: -5');
+      expect(output).toContain('top: -20');
+    });
   });
 });
