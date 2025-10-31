@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, Pressable, Image } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { styled } from 'kstyled';
 import { useRouter, Href } from 'expo-router';
 import { StyledComponentsIcon, EmotionIcon } from '../src/icons';

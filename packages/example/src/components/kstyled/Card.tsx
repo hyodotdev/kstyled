@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Image, ImageBackground, Alert } from 'react-native';
+import { View, Pressable, Alert } from 'react-native';
 import { styled as kstyled } from 'kstyled';
 import type { CardData, StaticCardData } from '../types';
 import { AppIcon } from '../../icons';

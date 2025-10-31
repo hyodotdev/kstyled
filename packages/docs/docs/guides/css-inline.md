@@ -16,16 +16,20 @@ import { View, Text } from 'react-native';
 
 function MyComponent() {
   return (
-    <View style={css`
-      padding: 20px;
-      background-color: #f0f0f0;
-      border-radius: 12px;
-    `}>
-      <Text style={css`
-        font-size: 18px;
-        font-weight: 600;
-        color: #000;
-      `}>
+    <View
+      style={css`
+        padding: 20px;
+        background-color: #f0f0f0;
+        border-radius: 12px;
+      `}
+    >
+      <Text
+        style={css`
+          font-size: 18px;
+          font-weight: 600;
+          color: #000;
+        `}
+      >
         Hello World
       </Text>
     </View>
@@ -43,13 +47,15 @@ import { Text } from 'react-native';
 
 function DynamicText({ isActive }: { isActive: boolean }) {
   return (
-    <Text style={css`
-      font-size: 18px;
-      font-weight: 600;
-      padding: 12px;
-      color: ${isActive ? 'red' : 'yellow'};
-      background-color: ${isActive ? '#FFE5E5' : '#FFF9E5'};
-    `}>
+    <Text
+      style={css`
+        font-size: 18px;
+        font-weight: 600;
+        padding: 12px;
+        color: ${isActive ? 'red' : 'yellow'};
+        background-color: ${isActive ? '#FFE5E5' : '#FFF9E5'};
+      `}
+    >
       Status: {isActive ? 'Active' : 'Inactive'}
     </Text>
   );
@@ -61,19 +67,29 @@ function DynamicText({ isActive }: { isActive: boolean }) {
 Use any JavaScript expression for dynamic values:
 
 ```tsx
-function Card({ size, variant }: { size: 'small' | 'large'; variant: 'primary' | 'secondary' }) {
+function Card({
+  size,
+  variant,
+}: {
+  size: 'small' | 'large';
+  variant: 'primary' | 'secondary';
+}) {
   return (
-    <View style={css`
-      padding: ${size === 'small' ? '8px' : '16px'};
-      border-radius: ${size === 'small' ? '4px' : '8px'};
-      background-color: ${variant === 'primary' ? '#007AFF' : '#5856D6'};
-      border-width: 1px;
-      border-color: ${variant === 'primary' ? '#0051D5' : '#3634A3'};
-    `}>
-      <Text style={css`
-        font-size: ${size === 'small' ? '14px' : '16px'};
-        color: white;
-      `}>
+    <View
+      style={css`
+        padding: ${size === 'small' ? '8px' : '16px'};
+        border-radius: ${size === 'small' ? '4px' : '8px'};
+        background-color: ${variant === 'primary' ? '#007AFF' : '#5856D6'};
+        border-width: 1px;
+        border-color: ${variant === 'primary' ? '#0051D5' : '#3634A3'};
+      `}
+    >
+      <Text
+        style={css`
+          font-size: ${size === 'small' ? '14px' : '16px'};
+          color: white;
+        `}
+      >
         {variant} {size} button
       </Text>
     </View>
@@ -98,13 +114,15 @@ const styles = StyleSheet.create({
 
 function MyComponent({ highlighted }: { highlighted: boolean }) {
   return (
-    <View style={[
-      styles.container,
-      css`
-        border-width: ${highlighted ? '2px' : '1px'};
-        border-color: ${highlighted ? '#007AFF' : '#ccc'};
-      `,
-    ]}>
+    <View
+      style={[
+        styles.container,
+        css`
+          border-width: ${highlighted ? '2px' : '1px'};
+          border-color: ${highlighted ? '#007AFF' : '#ccc'};
+        `,
+      ]}
+    >
       <Text>Content</Text>
     </View>
   );
@@ -118,20 +136,24 @@ Apply styles conditionally:
 ```tsx
 function StatusBadge({ status }: { status: 'success' | 'warning' | 'error' }) {
   return (
-    <View style={css`
-      padding: 4px 8px;
-      border-radius: 4px;
-      background-color: ${
-        status === 'success' ? '#34C759' :
-        status === 'warning' ? '#FF9500' :
-        '#FF3B30'
-      };
-    `}>
-      <Text style={css`
-        font-size: 12px;
-        font-weight: 600;
-        color: white;
-      `}>
+    <View
+      style={css`
+        padding: 4px 8px;
+        border-radius: 4px;
+        background-color: ${status === 'success'
+          ? '#34C759'
+          : status === 'warning'
+            ? '#FF9500'
+            : '#FF3B30'};
+      `}
+    >
+      <Text
+        style={css`
+          font-size: 12px;
+          font-weight: 600;
+          color: white;
+        `}
+      >
         {status.toUpperCase()}
       </Text>
     </View>
@@ -161,11 +183,13 @@ function InteractiveButton() {
         transform: scale(${pressed ? 0.95 : 1});
       `}
     >
-      <Text style={css`
-        color: white;
-        font-weight: 600;
-        opacity: ${pressed ? 0.8 : 1};
-      `}>
+      <Text
+        style={css`
+          color: white;
+          font-weight: 600;
+          opacity: ${pressed ? 0.8 : 1};
+        `}
+      >
         Press Me
       </Text>
     </Pressable>
@@ -186,11 +210,11 @@ function RotatingBox() {
 
   return (
     <Pressable
-      onPress={() => setRotation(prev => prev + 45)}
+      onPress={() => setRotation((prev) => prev + 45)}
       style={css`
         width: 100px;
         height: 100px;
-        background-color: #007AFF;
+        background-color: #007aff;
         border-radius: 8px;
         transform: rotate(${rotation}deg);
       `}
@@ -204,12 +228,14 @@ function RotatingBox() {
 ### Flex layouts
 
 ```tsx
-<View style={css`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-`}>
+<View
+  style={css`
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+  `}
+>
   <Text>Left</Text>
   <Text>Right</Text>
 </View>
@@ -218,11 +244,13 @@ function RotatingBox() {
 ### Centered content
 
 ```tsx
-<View style={css`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`}>
+<View
+  style={css`
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  `}
+>
   <Text>Centered</Text>
 </View>
 ```
@@ -230,32 +258,103 @@ function RotatingBox() {
 ### Cards with shadows
 
 ```tsx
-<View style={css`
-  background-color: white;
-  border-radius: 12px;
-  padding: 16px;
-  shadow-color: #000;
-  shadow-opacity: 0.1;
-  shadow-radius: 8px;
-  elevation: 3;
-`}>
+<View
+  style={css`
+    background-color: white;
+    border-radius: 12px;
+    padding: 16px;
+    shadow-color: #000;
+    shadow-opacity: 0.1;
+    shadow-radius: 8px;
+    elevation: 3;
+  `}
+>
   <Text>Card Content</Text>
 </View>
 ```
 
 ## Performance notes
 
-The `css` helper is processed at **runtime**, unlike `styled` which is compile-time. However, it still converts CSS syntax to React Native style objects efficiently.
+The `css` helper is **optimized at build-time by Babel**, similar to `styled` components:
+
+### Static styles are pre-compiled
+
+```tsx
+// This:
+<View style={css`
+  padding: 16px;
+  border-radius: 8px;
+`} />
+
+// Is transformed to:
+<View style={styles.s0} /> // ✅ StyleSheet.create() at build time
+```
+
+### Dynamic values are computed per render
+
+```tsx
+// This:
+<Text style={css`
+  font-size: 16px;
+  color: ${isActive ? 'red' : 'blue'};
+`} />
+
+// Is transformed to:
+<Text style={[styles.s0, { color: isActive ? 'red' : 'blue' }]} />
+// ✅ Static part cached, only color changes
+```
+
+### Optimization for arrays
+
+```tsx
+// Multiple css calls in arrays are flattened:
+<View style={[
+  css`padding: 16px`,
+  css`margin: 8px`,
+  { backgroundColor }
+]} />
+
+// Becomes:
+<View style={[styles.s0, styles.s1, { backgroundColor }]} />
+// ✅ No nested arrays
+```
+
+### Automatic memoization
+
+kstyled **automatically memoizes dynamic values** - you don't need `useMemo`:
+
+```tsx
+function MyComponent({ color, size }) {
+  // ✅ Automatically memoized!
+  // Same color + size = same style object (no re-render)
+  return (
+    <View
+      style={css`
+        background-color: ${color};
+        padding: ${size}px;
+      `}
+    />
+  );
+}
+```
+
+**How it works:**
+
+- Dynamic values are hashed and cached internally
+- If values don't change, the same style object is returned
+- No manual `useMemo` needed - it's automatic!
 
 **Best for:**
+
 - Quick prototyping
 - One-off styles
-- Highly dynamic styles that change frequently
+- Dynamic styles based on props/state
 
 **Use `styled` instead when:**
-- Styles are mostly static
-- Component will be reused many times
-- You want compile-time optimization
+
+- Creating reusable component libraries
+- Styles are completely static
+- You need TypeScript prop type inference
 
 ## When to use CSS inline vs styled
 
@@ -287,7 +386,7 @@ const Card = styled.View`
 // ✅ Component library
 const PrimaryButton = styled.Pressable`
   padding: 12px 24px;
-  background-color: #007AFF;
+  background-color: #007aff;
   border-radius: 8px;
 `;
 ```
@@ -317,17 +416,23 @@ const PrimaryButton = styled.Pressable`
 // Good - logic is clear
 function getStatusColor(status: string) {
   switch (status) {
-    case 'success': return '#34C759';
-    case 'warning': return '#FF9500';
-    case 'error': return '#FF3B30';
-    default: return '#8E8E93';
+    case 'success':
+      return '#34C759';
+    case 'warning':
+      return '#FF9500';
+    case 'error':
+      return '#FF3B30';
+    default:
+      return '#8E8E93';
   }
 }
 
-<View style={css`
-  background-color: ${getStatusColor(status)};
-  padding: 8px;
-`} />
+<View
+  style={css`
+    background-color: ${getStatusColor(status)};
+    padding: 8px;
+  `}
+/>;
 ```
 
 ### 3. Combine with StyleSheet for static styles
@@ -341,8 +446,12 @@ const staticStyles = StyleSheet.create({
 });
 
 // Only use css for dynamic parts
-<View style={[
-  staticStyles.container,
-  css`border-color: ${theme.borderColor};`,
-]} />
+<View
+  style={[
+    staticStyles.container,
+    css`
+      border-color: ${theme.borderColor};
+    `,
+  ]}
+/>;
 ```

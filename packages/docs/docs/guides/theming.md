@@ -66,11 +66,11 @@ const Button = styled.Pressable`
 
 ## TypeScript theme types
 
-Define your theme type for full type safety:
+You can easily extend the theme type with module augmentation:
 
 ```tsx
 // theme.ts
-export const lightTheme = {
+export const theme = {
   colors: {
     primary: '#007AFF',
     secondary: '#5856D6',
@@ -85,15 +85,19 @@ export const lightTheme = {
   },
 };
 
-export type Theme = typeof lightTheme;
+export type CustomAppTheme = typeof theme;
+```
 
-// Extend kstyled types
+```tsx
+// styled.d.ts
+import type {CustomAppTheme} from './theme';
+
 declare module 'kstyled' {
-  export interface DefaultTheme extends Theme {}
+  export interface DefaultTheme extends CustomAppTheme {}
 }
 ```
 
-Now you'll get autocomplete for theme values:
+Now you'll get full TypeScript autocomplete for theme values:
 
 ```tsx
 const Button = styled.Pressable`

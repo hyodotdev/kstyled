@@ -16,6 +16,11 @@ interface CssMetadata {
   styleKeys?: string[];
   getDynamicPatch?: (props: any) => any;
   debug?: boolean;
+  // Internal cache for dynamic patch memoization
+  _cachedDynamic?: {
+    patch: any;
+    hash: string;
+  };
 }
 
 /**
@@ -175,7 +180,7 @@ export const css: CssFactory = Object.assign(
     }
   },
   {
-    __withStyles: function (metadata: CssMetadata): any[] {
+    __withStyles: function (metadata: CssMetadata): any {
       const { compiledStyles, styleKeys, getDynamicPatch } = metadata;
 
       const styles: any[] = [];
@@ -189,15 +194,38 @@ export const css: CssFactory = Object.assign(
         }
       }
 
-      // Add dynamic patch
+      // Add dynamic patch with automatic memoization
       // IMPORTANT: getDynamicPatch({}) is evaluated immediately here
       // The dynamic values are captured in the closure when Babel plugin creates this function
       // So SCREEN_WIDTH and other module-level constants work correctly
       if (getDynamicPatch) {
         const dynamicPatch = getDynamicPatch({});
+
         if (dynamicPatch && Object.keys(dynamicPatch).length > 0) {
-          styles.push(dynamicPatch);
+          // Automatic memoization: Create hash from dynamic values
+          const hash = JSON.stringify(dynamicPatch, (_key, value) =>
+            value === undefined ? '__ks__undefined__' : value
+          );
+
+          // Check if we can reuse the cached patch
+          if (metadata._cachedDynamic && metadata._cachedDynamic.hash === hash) {
+            styles.push(metadata._cachedDynamic.patch);
+          } else {
+            // Cache miss: store new patch
+            metadata._cachedDynamic = {
+              patch: dynamicPatch,
+              hash: hash,
+            };
+            styles.push(dynamicPatch);
+          }
         }
+      }
+
+      // Optimization: Return single style object if only one style exists
+      // This prevents unnecessary array creation and improves performance
+      // For multiple styles or when using in arrays, React Native will handle it
+      if (styles.length === 1) {
+        return styles[0];
       }
 
       return styles;

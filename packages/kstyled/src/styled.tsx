@@ -4,6 +4,7 @@ import {
   View,
   Text,
   Image,
+  ImageBackground,
   ScrollView,
   TouchableOpacity,
   Pressable,
@@ -255,6 +256,7 @@ type StyledShortcuts = {
   View: ReturnType<typeof styledFunction<typeof View>>;
   Text: ReturnType<typeof styledFunction<typeof Text>>;
   Image: ReturnType<typeof styledFunction<typeof Image>>;
+  ImageBackground: ReturnType<typeof styledFunction<typeof ImageBackground>>;
   ScrollView: ReturnType<typeof styledFunction<typeof ScrollView>>;
   TouchableOpacity: ReturnType<typeof styledFunction<typeof TouchableOpacity>>;
   Pressable: ReturnType<typeof styledFunction<typeof Pressable>>;
@@ -285,6 +287,11 @@ Object.defineProperty(styled, 'Text', {
 });
 Object.defineProperty(styled, 'Image', {
   get() { return styledShortcuts.Image || (styledShortcuts.Image = styledFunction(Image)); },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(styled, 'ImageBackground', {
+  get() { return styledShortcuts.ImageBackground || (styledShortcuts.ImageBackground = styledFunction(ImageBackground)); },
   enumerable: true,
   configurable: true
 });

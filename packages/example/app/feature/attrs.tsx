@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, Pressable, TextInput } from 'react-native';
+import { ScrollView } from 'react-native';
 import { styled } from 'kstyled';
 
 // ============================================
