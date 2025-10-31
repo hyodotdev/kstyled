@@ -333,11 +333,31 @@ bun run dev
 
 6. **Publish to npm**
 
+   **Option A: Stable Release (latest tag)**
+
    ```bash
    pnpm publish:packages
    ```
 
-   This publishes both `kstyled` and `babel-plugin-kstyled` to npm with public access.
+   This publishes both `kstyled` and `babel-plugin-kstyled` to npm with public access as the `latest` version.
+
+   **Option B: Beta/Preview Release (next tag)**
+
+   ```bash
+   pnpm publish:packages --tag next
+   ```
+
+   This publishes both packages with the `next` tag, allowing users to test pre-release versions without affecting the stable `latest` version:
+
+   ```bash
+   # Users can install the next version with:
+   npm install kstyled@next babel-plugin-kstyled@next
+   ```
+
+   Use this for:
+   - Testing major changes before stable release
+   - Preview releases for early adopters
+   - Release candidates (e.g., `0.3.0-rc.1`)
 
 7. **Create and push git tag**
 
