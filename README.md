@@ -1,6 +1,7 @@
 # kstyled
 
 [![CI](https://github.com/hyodotdev/kstyled/actions/workflows/ci.yml/badge.svg)](https://github.com/hyodotdev/kstyled/actions/workflows/ci.yml)
+[![Tests](https://github.com/hyodotdev/kstyled/actions/workflows/test.yml/badge.svg)](https://github.com/hyodotdev/kstyled/actions/workflows/test.yml)
 [![npm version](https://img.shields.io/npm/v/kstyled.svg)](https://www.npmjs.com/package/kstyled)
 [![npm downloads](https://img.shields.io/npm/dm/kstyled.svg)](https://www.npmjs.com/package/kstyled)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

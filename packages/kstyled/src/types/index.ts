@@ -163,3 +163,6 @@ export interface StyleCombiner {
     dynamicStyles?: StyleProp<StyleObject>
   ): StyleProp<StyleObject>[];
 }
+
+// Re-export types from styled-types for convenience
+export type { StyleMetadata, DynamicPatchFunction, PropsWithTheme } from './styled-types';
