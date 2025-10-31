@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
+import { ScrollView } from 'react-native';
 import { styled } from 'kstyled';
 
 // ============================================

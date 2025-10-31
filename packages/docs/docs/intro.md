@@ -7,7 +7,7 @@ sidebar_position: 1
 > **K-Dev Demon Styles** - Compile-time CSS-in-JS for React Native
 > *Banishing runtime overhead, one style at a time*
 
-**kstyled** is a compile-time CSS-in-JS library specifically designed for [React Native](https://reactnative.dev) that transforms [styled-components](https://styled-components.com/) syntax into native `StyleSheet.create()` calls at build time. Currently targets **React Native only** (not web).
+**kstyled** is a compile-time CSS-in-JS library specifically designed for [React Native](https://reactnative.dev) that transforms [styled-components](https://styled-components.com/) syntax into native `StyleSheet.create()` calls at build time.
 
 ## Why kstyled?
 
