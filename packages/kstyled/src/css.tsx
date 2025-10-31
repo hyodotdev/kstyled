@@ -203,7 +203,9 @@ export const css: CssFactory = Object.assign(
 
         if (dynamicPatch && Object.keys(dynamicPatch).length > 0) {
           // Automatic memoization: Create hash from dynamic values
-          const hash = JSON.stringify(dynamicPatch);
+          const hash = JSON.stringify(dynamicPatch, (_key, value) =>
+            value === undefined ? '__ks__undefined__' : value
+          );
 
           // Check if we can reuse the cached patch
           if (metadata._cachedDynamic && metadata._cachedDynamic.hash === hash) {
