@@ -46,18 +46,18 @@ export default function App() {
 Access theme values using the `${p => p.theme.xxx}` syntax:
 
 ```tsx
-const Container = styled(View)`
+const Container = styled.View`
   padding: ${p => p.theme.spacing.md}px;
   background-color: ${p => p.theme.colors.background};
 `;
 
-const Title = styled(Text)`
+const Title = styled.Text`
   font-size: 24px;
   color: ${p => p.theme.colors.text};
   margin-bottom: ${p => p.theme.spacing.sm}px;
 `;
 
-const Button = styled(Pressable)`
+const Button = styled.Pressable`
   padding: ${p => p.theme.spacing.md}px;
   background-color: ${p => p.theme.colors.primary};
   border-radius: ${p => p.theme.borderRadius.md}px;
@@ -96,7 +96,7 @@ declare module 'kstyled' {
 Now you'll get autocomplete for theme values:
 
 ```tsx
-const Button = styled(Pressable)`
+const Button = styled.Pressable`
   background-color: ${p => p.theme.colors.primary}; // ✅ Autocomplete works!
   padding: ${p => p.theme.spacing.md}px;
 `;

@@ -24,6 +24,7 @@ const sidebars: SidebarsConfig = {
         'guides/css-inline',
         'guides/theming',
         'guides/attrs',
+        'guides/extending-styles',
       ],
     },
     {

@@ -9,7 +9,7 @@ sidebar_position: 1
 Static styles are extracted at compile time and converted to `StyleSheet.create()`:
 
 ```tsx
-const Box = styled(View)`
+const Box = styled.View`
   width: 100px;
   height: 100px;
   background-color: #007AFF;
@@ -36,7 +36,7 @@ This is the most efficient way to style components - zero runtime cost.
 Numbers without units are treated as `dp` (density-independent pixels):
 
 ```tsx
-const Box = styled(View)`
+const Box = styled.View`
   width: 100px;    // 100 dp
   height: 50px;    // 50 dp
   padding: 16px;   // 16 dp
@@ -48,7 +48,7 @@ const Box = styled(View)`
 Use percentages for responsive layouts:
 
 ```tsx
-const Container = styled(View)`
+const Container = styled.View`
   width: 100%;
   padding: 5%;
 `;
@@ -61,13 +61,13 @@ const Container = styled(View)`
 React Native uses Flexbox by default:
 
 ```tsx
-const Row = styled(View)`
+const Row = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 `;
 
-const Column = styled(View)`
+const Column = styled.View`
   flex-direction: column;
   flex: 1;
 `;
@@ -76,13 +76,13 @@ const Column = styled(View)`
 ### Positioning
 
 ```tsx
-const Absolute = styled(View)`
+const Absolute = styled.View`
   position: absolute;
   top: 0;
   right: 0;
 `;
 
-const Relative = styled(View)`
+const Relative = styled.View`
   position: relative;
   z-index: 10;
 `;
@@ -93,7 +93,7 @@ const Relative = styled(View)`
 ### iOS shadows
 
 ```tsx
-const Card = styled(View)`
+const Card = styled.View`
   shadow-color: #000;
   shadow-offset: 0px 2px;
   shadow-opacity: 0.25;
@@ -104,7 +104,7 @@ const Card = styled(View)`
 ### Android elevation
 
 ```tsx
-const Card = styled(View)`
+const Card = styled.View`
   elevation: 5;
 `;
 ```
@@ -114,7 +114,7 @@ const Card = styled(View)`
 Combine both for consistent appearance:
 
 ```tsx
-const Card = styled(View)`
+const Card = styled.View`
   background-color: white;
   border-radius: 8px;
 
@@ -131,14 +131,14 @@ const Card = styled(View)`
 ## Text styling
 
 ```tsx
-const Title = styled(Text)`
+const Title = styled.Text`
   font-size: 24px;
   font-weight: bold;
   color: #000;
   text-align: center;
 `;
 
-const Body = styled(Text)`
+const Body = styled.Text`
   font-size: 16px;
   line-height: 24px;
   color: #666;
@@ -158,7 +158,7 @@ Properties can be written in either CSS kebab-case or React Native camelCase:
 
 ```tsx
 // Both work identically
-const Box = styled(View)`
+const Box = styled.View`
   background-color: #fff;  /* kebab-case */
   backgroundColor: #fff;    /* camelCase */
 `;

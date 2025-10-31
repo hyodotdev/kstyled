@@ -3,32 +3,32 @@ import { styled } from 'kstyled';
 import { useRouter, Href } from 'expo-router';
 import { StyledComponentsIcon, EmotionIcon } from '../src/icons';
 
-const Container = styled(View)`
+const Container = styled.View`
   flex: 1;
   background-color: #F2F2F7;
 `;
 
-const Header = styled(View)`
+const Header = styled.View`
   padding: 20px;
   background-color: #007AFF;
   align-items: center;
 `;
 
-const Title = styled(Text)`
+const Title = styled.Text`
   font-size: 28px;
   font-weight: bold;
   color: #FFFFFF;
   margin-bottom: 8px;
 `;
 
-const Subtitle = styled(Text)`
+const Subtitle = styled.Text`
   font-size: 16px;
   color: #FFFFFF;
   opacity: 0.9;
   text-align: center;
 `;
 
-const ExampleCard = styled(Pressable)`
+const ExampleCard = styled.Pressable`
   background-color: #FFFFFF;
   margin: 12px 16px;
   padding: 20px;
@@ -39,7 +39,7 @@ const ExampleCard = styled(Pressable)`
   elevation: 3;
 `;
 
-const PerformanceCard = styled(Pressable)`
+const PerformanceCard = styled.Pressable`
   background-color: #FFFFFF;
   margin: 12px 16px;
   padding: 20px;
@@ -52,30 +52,30 @@ const PerformanceCard = styled(Pressable)`
   align-items: center;
 `;
 
-const ExampleIcon = styled(Image)`
+const ExampleIcon = styled.Image`
   width: 32px;
   height: 32px;
   margin-right: 12px;
 `;
 
-const ExampleContent = styled(View)`
+const ExampleContent = styled.View`
   flex: 1;
 `;
 
-const ExampleTitle = styled(Text)`
+const ExampleTitle = styled.Text`
   font-size: 20px;
   font-weight: 600;
   color: #000000;
   margin-bottom: 8px;
 `;
 
-const ExampleDescription = styled(Text)`
+const ExampleDescription = styled.Text`
   font-size: 14px;
   color: #666666;
   line-height: 20px;
 `;
 
-const ArrowIcon = styled(Text)`
+const ArrowIcon = styled.Text`
   font-size: 18px;
   color: #007AFF;
   position: absolute;
@@ -84,12 +84,12 @@ const ArrowIcon = styled(Text)`
   transform: translateY(-9px);
 `;
 
-const SectionHeader = styled(View)`
+const SectionHeader = styled.View`
   padding: 16px 16px 8px 16px;
   margin-top: 12px;
 `;
 
-const SectionTitle = styled(Text)`
+const SectionTitle = styled.Text`
   font-size: 18px;
   font-weight: 700;
   color: #000000;
@@ -97,7 +97,7 @@ const SectionTitle = styled(Text)`
   letter-spacing: 0.5px;
 `;
 
-const SectionDescription = styled(Text)`
+const SectionDescription = styled.Text`
   font-size: 13px;
   color: #666666;
   margin-top: 4px;

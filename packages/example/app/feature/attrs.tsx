@@ -6,31 +6,31 @@ import { styled } from 'kstyled';
 // ============================================
 // Use .attrs() to set default props and accessibility attributes
 
-const Container = styled(View)`
+const Container = styled.View`
   flex: 1;
   background-color: #F2F2F7;
 `;
 
-const Header = styled(View)`
+const Header = styled.View`
   padding: 16px;
   background-color: #FFFFFF;
   border-bottom-width: 1px;
   border-bottom-color: #C6C6C8;
 `;
 
-const Title = styled(Text)`
+const Title = styled.Text`
   font-size: 24px;
   font-weight: bold;
   color: #000000;
   margin-bottom: 8px;
 `;
 
-const Description = styled(Text)`
+const Description = styled.Text`
   font-size: 14px;
   color: #8E8E93;
 `;
 
-const Section = styled(View)`
+const Section = styled.View`
   padding: 16px;
   background-color: #FFFFFF;
   margin: 16px;
@@ -41,35 +41,35 @@ const Section = styled(View)`
   elevation: 2;
 `;
 
-const SectionTitle = styled(Text)`
+const SectionTitle = styled.Text`
   font-size: 18px;
   font-weight: bold;
   color: #000000;
   margin-bottom: 12px;
 `;
 
-const CodeBlock = styled(View)`
+const CodeBlock = styled.View`
   background-color: #F5F5F5;
   padding: 12px;
   border-radius: 8px;
   margin-vertical: 8px;
 `;
 
-const Code = styled(Text)`
+const Code = styled.Text`
   font-family: Courier;
   font-size: 13px;
   color: #000000;
   line-height: 18px;
 `;
 
-const InfoText = styled(Text)`
+const InfoText = styled.Text`
   font-size: 14px;
   color: #666666;
   line-height: 20px;
   margin-vertical: 8px;
 `;
 
-const Badge = styled(View)`
+const Badge = styled.View`
   background-color: #FF2D55;
   padding: 4px 8px;
   border-radius: 4px;
@@ -77,14 +77,14 @@ const Badge = styled(View)`
   margin-top: 12px;
 `;
 
-const BadgeText = styled(Text)`
+const BadgeText = styled.Text`
   color: #FFFFFF;
   font-size: 11px;
   font-weight: 600;
 `;
 
 // Input with attrs for accessibility
-const StyledInput = styled(TextInput).attrs({
+const StyledInput = styled.TextInput.attrs({
   placeholderTextColor: '#999999',
   accessibilityRole: 'text' as const,
   accessibilityLabel: 'Text input field',
@@ -99,7 +99,7 @@ const StyledInput = styled(TextInput).attrs({
   color: #000000;
 `;
 
-const Label = styled(Text)`
+const Label = styled.Text`
   font-size: 14px;
   font-weight: 600;
   color: #000000;
@@ -107,7 +107,7 @@ const Label = styled(Text)`
 `;
 
 // Button with attrs
-const AccessibleButton = styled(Pressable).attrs({
+const AccessibleButton = styled.Pressable.attrs({
   accessibilityRole: 'button' as const,
   accessibilityHint: 'Double tap to activate',
 })`
@@ -118,13 +118,13 @@ const AccessibleButton = styled(Pressable).attrs({
   margin-vertical: 8px;
 `;
 
-const ButtonText = styled(Text)`
+const ButtonText = styled.Text`
   color: #FFFFFF;
   font-size: 16px;
   font-weight: 600;
 `;
 
-const HighlightBox = styled(View)`
+const HighlightBox = styled.View`
   background-color: #FFF3CD;
   padding: 12px;
   border-radius: 8px;
@@ -133,7 +133,7 @@ const HighlightBox = styled(View)`
   margin-vertical: 8px;
 `;
 
-const HighlightText = styled(Text)`
+const HighlightText = styled.Text`
   font-size: 14px;
   color: #856404;
   line-height: 20px;

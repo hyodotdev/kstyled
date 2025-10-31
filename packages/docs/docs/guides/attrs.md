@@ -11,7 +11,7 @@ The `.attrs()` method lets you attach default props or computed props to styled 
 Set default props for your components:
 
 ```tsx
-const Input = styled(TextInput).attrs({
+const Input = styled.TextInput.attrs({
   placeholderTextColor: '#999',
   autoCapitalize: 'none',
   autoCorrect: false,
@@ -32,7 +32,7 @@ const Input = styled(TextInput).attrs({
 Use a function to compute props dynamically:
 
 ```tsx
-const Button = styled(Pressable).attrs<{ $size?: 'small' | 'large' }>(
+const Button = styled.Pressable.attrs<{ $size?: 'small' | 'large' }>(
   (props) => ({
     hitSlop: props.$size === 'small' ? 8 : 16,
     accessible: true,
@@ -50,7 +50,7 @@ const Button = styled(Pressable).attrs<{ $size?: 'small' | 'large' }>(
 Use attrs to set accessibility properties:
 
 ```tsx
-const Card = styled(View).attrs({
+const Card = styled.View.attrs({
   accessible: true,
   accessibilityRole: 'button' as const,
 })`
@@ -59,7 +59,7 @@ const Card = styled(View).attrs({
   border-radius: 12px;
 `;
 
-const Heading = styled(Text).attrs({
+const Heading = styled.Text.attrs({
   accessible: true,
   accessibilityRole: 'header' as const,
 })`
@@ -73,7 +73,7 @@ const Heading = styled(Text).attrs({
 Props passed to the component override attrs:
 
 ```tsx
-const Input = styled(TextInput).attrs({
+const Input = styled.TextInput.attrs({
   placeholderTextColor: '#999',
 })`
   padding: 12px;
@@ -93,7 +93,7 @@ const Input = styled(TextInput).attrs({
 ```tsx
 import { Platform } from 'react-native';
 
-const Input = styled(TextInput).attrs({
+const Input = styled.TextInput.attrs({
   placeholderTextColor: '#999',
   ...(Platform.OS === 'ios' ? {
     keyboardAppearance: 'dark' as const,
@@ -109,7 +109,7 @@ const Input = styled(TextInput).attrs({
 You can chain multiple `.attrs()` calls:
 
 ```tsx
-const BaseButton = styled(Pressable).attrs({
+const BaseButton = styled.Pressable.attrs({
   accessible: true,
   accessibilityRole: 'button' as const,
 })`

@@ -6,7 +6,7 @@ import { AppIcon } from '../../icons';
 import IconImage from '../../../assets/icon.png';
 
 // Card Container
-export const Card = kstyled(View)<{ $index: number }>`
+export const Card = kstyled.View<{ $index: number }>`
   width: 100%;
   align-self: stretch;
   background-color: #FFFFFF;
@@ -23,21 +23,21 @@ export const Card = kstyled(View)<{ $index: number }>`
 `;
 
 // Card Header
-export const CardHeader = kstyled(View)`
+export const CardHeader = kstyled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 `;
 
-export const CardImage = kstyled(Image)`
+export const CardImage = kstyled.Image`
   width: 48px;
   height: 48px;
   border-radius: 24px;
   margin-right: 12px;
 `;
 
-export const CardTitle = kstyled(Text)<{ $priority: 'high' | 'medium' | 'low' }>`
+export const CardTitle = kstyled.Text<{ $priority: 'high' | 'medium' | 'low' }>`
   flex: 1;
   font-size: 18px;
   font-weight: 700;
@@ -45,14 +45,14 @@ export const CardTitle = kstyled(Text)<{ $priority: 'high' | 'medium' | 'low' }>
     p.$priority === 'high' ? '#FF3B30' : p.$priority === 'medium' ? '#FF9500' : '#34C759'};
 `;
 
-export const CardBadge = kstyled(View)<{ $type: 'new' | 'hot' | 'sale' }>`
+export const CardBadge = kstyled.View<{ $type: 'new' | 'hot' | 'sale' }>`
   padding: 4px 12px;
   border-radius: 12px;
   background-color: ${(p: { $type: 'new' | 'hot' | 'sale' }) =>
     p.$type === 'new' ? '#007AFF' : p.$type === 'hot' ? '#FF3B30' : '#FF9500'};
 `;
 
-export const CardBadgeText = kstyled(Text)`
+export const CardBadgeText = kstyled.Text`
   font-size: 11px;
   font-weight: 700;
   color: #FFFFFF;
@@ -60,17 +60,17 @@ export const CardBadgeText = kstyled(Text)`
 `;
 
 // Card Content
-export const CardContent = kstyled(View)`
+export const CardContent = kstyled.View`
   gap: 12px;
 `;
 
-export const InfoRow = kstyled(View)`
+export const InfoRow = kstyled.View`
   flex-direction: row;
   align-items: center;
   gap: 8px;
 `;
 
-export const InfoIcon = kstyled(View)<{ $color: string }>`
+export const InfoIcon = kstyled.View<{ $color: string }>`
   width: 32px;
   height: 32px;
   border-radius: 16px;
@@ -79,28 +79,28 @@ export const InfoIcon = kstyled(View)<{ $color: string }>`
   justify-content: center;
 `;
 
-export const InfoIconText = kstyled(Text)`
+export const InfoIconText = kstyled.Text`
   font-size: 16px;
 `;
 
-export const InfoContent = kstyled(View)`
+export const InfoContent = kstyled.View`
   flex: 1;
 `;
 
-export const InfoTitle = kstyled(Text)`
+export const InfoTitle = kstyled.Text`
   font-size: 14px;
   font-weight: 600;
   color: #000000;
   margin-bottom: 2px;
 `;
 
-export const InfoSubtitle = kstyled(Text)`
+export const InfoSubtitle = kstyled.Text`
   font-size: 12px;
   color: #8E8E93;
 `;
 
 // Progress Bar
-export const ProgressBar = kstyled(View)`
+export const ProgressBar = kstyled.View`
   height: 8px;
   background-color: #F2F2F7;
   border-radius: 4px;
@@ -108,20 +108,20 @@ export const ProgressBar = kstyled(View)`
   overflow: hidden;
 `;
 
-export const ProgressFill = kstyled(View)<{ $color: string }>`
+export const ProgressFill = kstyled.View<{ $color: string }>`
   height: 100%;
   background-color: ${(p: { $color: string }) => p.$color};
   border-radius: 4px;
 `;
 
 // Tags
-export const TagsContainer = kstyled(View)`
+export const TagsContainer = kstyled.View`
   flex-direction: row;
   gap: 8px;
   flex-wrap: wrap;
 `;
 
-export const Tag = kstyled(Pressable)<{ $variant: 'primary' | 'secondary' | 'success'; $selected?: boolean }>`
+export const Tag = kstyled.Pressable<{ $variant: 'primary' | 'secondary' | 'success'; $selected?: boolean }>`
   padding: 6px 12px;
   border-radius: 8px;
   background-color: ${(p: { $variant: 'primary' | 'secondary' | 'success'; $selected?: boolean }) =>
@@ -135,7 +135,7 @@ export const Tag = kstyled(Pressable)<{ $variant: 'primary' | 'secondary' | 'suc
       : 'transparent'};
 `;
 
-export const TagText = kstyled(Text)<{ $variant: 'primary' | 'secondary' | 'success'; $selected?: boolean }>`
+export const TagText = kstyled.Text<{ $variant: 'primary' | 'secondary' | 'success'; $selected?: boolean }>`
   font-size: 12px;
   font-weight: 600;
   color: ${(p: { $variant: 'primary' | 'secondary' | 'success'; $selected?: boolean }) =>
@@ -145,7 +145,7 @@ export const TagText = kstyled(Text)<{ $variant: 'primary' | 'secondary' | 'succ
 `;
 
 // Card Footer
-export const CardFooter = kstyled(View)`
+export const CardFooter = kstyled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -155,20 +155,20 @@ export const CardFooter = kstyled(View)`
   border-top-color: #F2F2F7;
 `;
 
-export const FooterText = kstyled(Text)<{ $bold?: boolean }>`
+export const FooterText = kstyled.Text<{ $bold?: boolean }>`
   font-size: 13px;
   font-weight: ${(p: { $bold?: boolean }) => p.$bold ? '700' : '400'};
   color: ${(p: { $bold?: boolean }) => p.$bold ? '#000000' : '#8E8E93'};
 `;
 
-export const ActionButton = kstyled(Pressable)<{ $variant: 'primary' | 'secondary' }>`
+export const ActionButton = kstyled.Pressable<{ $variant: 'primary' | 'secondary' }>`
   padding: 8px 16px;
   border-radius: 8px;
   background-color: ${(p: { $variant: 'primary' | 'secondary' }) =>
     p.$variant === 'primary' ? '#007AFF' : '#F2F2F7'};
 `;
 
-export const ActionButtonText = kstyled(Text)<{ $variant: 'primary' | 'secondary' }>`
+export const ActionButtonText = kstyled.Text<{ $variant: 'primary' | 'secondary' }>`
   font-size: 13px;
   font-weight: 600;
   color: ${(p: { $variant: 'primary' | 'secondary' }) =>
@@ -176,7 +176,7 @@ export const ActionButtonText = kstyled(Text)<{ $variant: 'primary' | 'secondary
 `;
 
 // Static Card Components
-export const StaticCard = kstyled(View)`
+export const StaticCard = kstyled.View`
   width: 100%;
   border-radius: 12px;
   margin-bottom: 12px;
@@ -185,54 +185,54 @@ export const StaticCard = kstyled(View)`
   border-color: #E5E5E5;
 `;
 
-export const StaticCardBackground = kstyled(ImageBackground)`
+export const StaticCardBackground = kstyled.ImageBackground`
   width: 100%;
   padding: 16px;
   background-color: #FFFFFF;
 `;
 
-export const StaticHeader = kstyled(View)`
+export const StaticHeader = kstyled.View`
   flex-direction: row;
   align-items: center;
   margin-bottom: 12px;
 `;
 
-export const StaticTitle = kstyled(Text)`
+export const StaticTitle = kstyled.Text`
   font-size: 18px;
   font-weight: 700;
   color: #000000;
   margin-bottom: 4px;
 `;
 
-export const StaticSubtitle = kstyled(Text)`
+export const StaticSubtitle = kstyled.Text`
   font-size: 13px;
   color: #8E8E93;
   margin-bottom: 12px;
 `;
 
-export const StaticDescription = kstyled(Text)`
+export const StaticDescription = kstyled.Text`
   font-size: 14px;
   color: #333333;
   line-height: 22px;
   margin-bottom: 8px;
 `;
 
-export const StaticHighlight = kstyled(Text)`
+export const StaticHighlight = kstyled.Text`
   font-weight: 700;
   color: #007AFF;
 `;
 
-export const StaticWarning = kstyled(Text)`
+export const StaticWarning = kstyled.Text`
   font-weight: 700;
   color: #FF9500;
 `;
 
-export const StaticSuccess = kstyled(Text)`
+export const StaticSuccess = kstyled.Text`
   font-weight: 700;
   color: #34C759;
 `;
 
-export const StaticMetaRow = kstyled(View)`
+export const StaticMetaRow = kstyled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -242,7 +242,7 @@ export const StaticMetaRow = kstyled(View)`
   border-top-color: #F2F2F7;
 `;
 
-export const StaticMetaText = kstyled(Text)`
+export const StaticMetaText = kstyled.Text`
   font-size: 12px;
   color: #8E8E93;
 `;

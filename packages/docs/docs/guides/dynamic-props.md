@@ -9,7 +9,7 @@ sidebar_position: 2
 Use props prefixed with `$` to pass values to your styles. These props won't be passed to the underlying component:
 
 ```tsx
-const Button = styled(Pressable)<{ $primary?: boolean }>`
+const Button = styled.Pressable<{ $primary?: boolean }>`
   padding: 12px 24px;
   background-color: ${p => p.$primary ? '#007AFF' : '#ccc'};
   border-radius: 8px;
@@ -31,7 +31,7 @@ interface BoxProps {
   $color?: string;
 }
 
-const Box = styled(View)<BoxProps>`
+const Box = styled.View<BoxProps>`
   background-color: ${p => p.$color || '#007AFF'};
   width: ${p => {
     switch (p.$size) {
@@ -58,7 +58,7 @@ const Box = styled(View)<BoxProps>`
 ### Boolean props
 
 ```tsx
-const Badge = styled(View)<{ $active?: boolean }>`
+const Badge = styled.View<{ $active?: boolean }>`
   padding: 4px 8px;
   border-radius: 4px;
   background-color: ${p => p.$active ? '#34C759' : '#8E8E93'};
@@ -70,7 +70,7 @@ const Badge = styled(View)<{ $active?: boolean }>`
 ```tsx
 type Variant = 'primary' | 'secondary' | 'success' | 'danger';
 
-const Button = styled(Pressable)<{ $variant?: Variant }>`
+const Button = styled.Pressable<{ $variant?: Variant }>`
   padding: 12px 24px;
   border-radius: 8px;
   background-color: ${p => {
@@ -90,7 +90,7 @@ const Button = styled(Pressable)<{ $variant?: Variant }>`
 Static styles are compiled, dynamic styles computed at runtime:
 
 ```tsx
-const Card = styled(View)<{ $highlighted?: boolean }>`
+const Card = styled.View<{ $highlighted?: boolean }>`
   /* Static - compiled */
   padding: 16px;
   border-radius: 12px;
@@ -108,7 +108,7 @@ For best performance, keep dynamic styles minimal. More static styles = better p
 
 ```tsx
 // Good - mostly static
-const Button = styled(Pressable)<{ $primary?: boolean }>`
+const Button = styled.Pressable<{ $primary?: boolean }>`
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 16px;
@@ -117,7 +117,7 @@ const Button = styled(Pressable)<{ $primary?: boolean }>`
 `;
 
 // Less optimal - everything dynamic
-const Button = styled(Pressable)<{ $size?: number; $radius?: number }>`
+const Button = styled.Pressable<{ $size?: number; $radius?: number }>`
   padding: ${p => p.$size || 12}px;
   border-radius: ${p => p.$radius || 8}px;
   font-size: ${p => (p.$size || 12) + 4}px;

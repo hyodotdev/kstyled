@@ -102,14 +102,14 @@ export default function App() {
 
 ```tsx
 // ✅ Correct - use $ prefix
-const Button = styled(Pressable)`
+const Button = styled.Pressable`
   background-color: ${(p) => p.$variant === 'primary' ? 'blue' : 'gray'};
 `;
 
 <Button $variant="primary" />
 
 // ❌ Wrong - no $ prefix
-const Button = styled(Pressable)`
+const Button = styled.Pressable`
   background-color: ${(p) => p.variant === 'primary' ? 'blue' : 'gray'};
 `;
 <Button variant="primary" /> // Won't work, variant passed to component
@@ -147,14 +147,14 @@ const styles = css`padding: 16px;`; // Won't work as expected
 1. **Check if using too many dynamic styles**:
    ```tsx
    // ❌ Bad - everything is dynamic
-   const Card = styled(View)`
+   const Card = styled.View`
      padding: ${(p) => p.$size === 'small' ? '8px' : '16px'};
      margin: ${(p) => p.$size === 'small' ? '4px' : '8px'};
      background: ${(p) => p.$color};
    `;
 
    // ✅ Better - static styles extracted
-   const Card = styled(View)`
+   const Card = styled.View`
      border-radius: 8px;  /* Static */
      padding: ${(p) => p.$size === 'small' ? '8px' : '16px'};
      background: ${(p) => p.$color};
@@ -177,7 +177,7 @@ const styles = css`padding: 16px;`; // Won't work as expected
 3. **Minimize re-renders**:
    ```tsx
    // ✅ Good - memoized
-   const Card = React.memo(styled(View)`
+   const Card = React.memo(styled.View`
      background-color: ${(p) => p.$color};
    `);
    ```
@@ -230,7 +230,7 @@ interface ButtonProps extends ViewProps {
 }
 
 // Use with styled
-const Button = styled(Pressable)<ButtonProps>`
+const Button = styled.Pressable<ButtonProps>`
   background-color: ${(p) => p.$variant === 'primary' ? 'blue' : 'gray'};
   padding: ${(p) => p.$size === 'small' ? '8px' : '16px'};
 `;
@@ -264,7 +264,7 @@ declare module 'kstyled' {
 ```tsx
 import { Platform } from 'react-native';
 
-const Card = styled(View)`
+const Card = styled.View`
   /* iOS shadow */
   ${Platform.OS === 'ios' && `
     shadow-color: #000;

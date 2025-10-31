@@ -10,24 +10,22 @@ kstyled transforms styles at compile time, resulting in zero runtime overhead co
 
 ### Bundle size comparison
 
-| Library                      | Bundle Size (minified) | Packages Required                                                               |
-| ---------------------------- | ---------------------- | ------------------------------------------------------------------------------- |
-| **kstyled**                  | ~10 KB                 | 1 package: `kstyled`                                                            |
-| **@emotion/native**          | ~13-18 KB              | 3 packages: `@emotion/native` + `@emotion/primitives-core` + `@emotion/react`\* |
-| **styled-components/native** | ~21 KB                 | 1 package: `styled-components` (includes both web & native)                     |
+| Library                      | Minified | Gzipped | Packages Required                                                               |
+| ---------------------------- | -------- | ------- | ------------------------------------------------------------------------------- |
+| **kstyled**                  | 8.1 KB   | 2.9 KB  | 1 package: `kstyled`                                                            |
+| **@emotion/native**          | 14.8 KB  | 5.4 KB  | 3 packages: `@emotion/native` + `@emotion/primitives-core` + `@emotion/react`\* |
+| **styled-components/native** | 20.4 KB  | 7.7 KB  | 1 package: `styled-components` (includes both web & native)                     |
 
 _\*@emotion/react is a required peer dependency for @emotion/native to work_
 
 **Key insights:**
 
-- **kstyled is the smallest** at ~10 KB with everything in one package
-- **@emotion/native requires 3 separate packages** totaling ~13-18 KB:
-  - `@emotion/native`: ~1 KB (just a wrapper)
-  - `@emotion/primitives-core`: ~7 KB (core functionality)
-  - `@emotion/react`: ~5-10 KB (required peer dependency)
-  - The often-cited "~8 KB" only counts 2 of the 3 required packages
-  - Actual runtime bundle is 60-80% larger than advertised
-- **styled-components** is ~21 KB in one package with the most complete feature set
+- **kstyled is the smallest** at 8.1 KB (2.9 KB gzipped) with everything in one package
+- **@emotion/native requires 3 packages** totaling 14.8 KB (5.4 KB gzipped):
+  - `@emotion/native`: 1.2 KB (0.6 KB gzipped)
+  - `@emotion/primitives-core`: 6.6 KB (2.3 KB gzipped)
+  - `@emotion/react`: 7.0 KB (2.4 KB gzipped)
+- **styled-components** is 20.4 KB (7.7 KB gzipped) in one package with the most complete feature set
   - Includes both web and native in the same npm package
   - Use `styled-components/native` import path for React Native
 
@@ -50,7 +48,7 @@ kstyled provides the most benefit in these scenarios:
 Rendering many components with complex styles:
 
 ```tsx
-const Item = styled(View)`
+const Item = styled.View`
   padding: 16px;
   border-radius: 8px;
   background-color: white;
@@ -72,7 +70,7 @@ Components with mostly static styles:
 
 ```tsx
 // All these styles are compiled at build time
-const Card = styled(View)`
+const Card = styled.View`
   padding: 20px;
   margin: 12px;
   border-radius: 12px;
@@ -89,12 +87,12 @@ const Card = styled(View)`
 Deep component trees with many styled elements:
 
 ```tsx
-const Page = styled(View)`...`;
-const Section = styled(View)`...`;
-const Card = styled(View)`...`;
-const Header = styled(View)`...`;
-const Title = styled(Text)`...`;
-const Body = styled(Text)`...`;
+const Page = styled.View`...`;
+const Section = styled.View`...`;
+const Card = styled.View`...`;
+const Header = styled.View`...`;
+const Title = styled.Text`...`;
+const Body = styled.Text`...`;
 
 // No runtime parsing overhead for any of these
 ```
@@ -107,7 +105,7 @@ More static = better performance:
 
 ```tsx
 // Good - mostly static
-const Button = styled(Pressable)<{ $primary?: boolean }>`
+const Button = styled.Pressable<{ $primary?: boolean }>`
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -115,7 +113,7 @@ const Button = styled(Pressable)<{ $primary?: boolean }>`
 `;
 
 // Less optimal - everything dynamic
-const Button = styled(Pressable)<{ $padding?: number; $radius?: number }>`
+const Button = styled.Pressable<{ $padding?: number; $radius?: number }>`
   padding: ${(p) => p.$padding || 12}px;
   border-radius: ${(p) => p.$radius || 8}px;
 `;
@@ -126,7 +124,7 @@ const Button = styled(Pressable)<{ $padding?: number; $radius?: number }>`
 For truly dynamic styles, use React Native's StyleSheet:
 
 ```tsx
-const Item = styled(View)`
+const Item = styled.View`
   padding: 16px;
   border-radius: 8px;
 `;
@@ -146,7 +144,7 @@ const getButtonColor = (variant: string) => {
   return computeColor(variant);
 };
 
-const Button = styled(Pressable)<{ $variant: string }>`
+const Button = styled.Pressable<{ $variant: string }>`
   padding: 12px;
   background-color: ${(p) => getButtonColor(p.$variant)};
 `;
@@ -242,7 +240,7 @@ The performance advantage comes from **build-time optimization**:
 
 ```tsx
 // This code:
-const Box = styled(View)`
+const Box = styled.View`
   padding: 16px;
   border-radius: 12px;
   background-color: ${(p) => (p.$selected ? '#007AFF' : '#FFF')};

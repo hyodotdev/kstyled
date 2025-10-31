@@ -27,14 +27,13 @@ A new React component with the specified styles applied.
 
 ```tsx
 import { styled } from 'kstyled';
-import { View, Text } from 'react-native';
 
-const Container = styled(View)`
+const Container = styled.View`
   flex: 1;
   padding: 20px;
 `;
 
-const Title = styled(Text)<{ $large?: boolean }>`
+const Title = styled.Text<{ $large?: boolean }>`
   font-size: ${p => p.$large ? '32px' : '24px'};
   font-weight: bold;
 `;
@@ -185,7 +184,7 @@ A styled component factory with attrs applied.
 ### Example
 
 ```tsx
-const Input = styled(TextInput).attrs({
+const Input = styled.TextInput.attrs({
   placeholderTextColor: '#999',
   autoCapitalize: 'none',
 })`
@@ -193,7 +192,7 @@ const Input = styled(TextInput).attrs({
   border-radius: 8px;
 `;
 
-const Button = styled(Pressable).attrs<{ $size?: 'small' | 'large' }>(
+const Button = styled.Pressable.attrs<{ $size?: 'small' | 'large' }>(
   (props) => ({
     hitSlop: props.$size === 'small' ? 8 : 16,
   })

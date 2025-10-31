@@ -25,7 +25,7 @@ Traditional CSS-in-JS libraries like styled-components and emotion parse and com
 
 ```tsx
 // You write this:
-const Button = styled(Pressable)<{ $primary?: boolean }>`
+const Button = styled.Pressable<{ $primary?: boolean }>`
   padding: 16px;
   background-color: ${p => p.$primary ? '#007AFF' : '#ccc'};
   border-radius: 8px;

@@ -278,14 +278,14 @@ The `css` helper is processed at **runtime**, unlike `styled` which is compile-t
 
 ```tsx
 // ✅ Reusable components with static styles
-const Card = styled(View)`
+const Card = styled.View`
   padding: 16px;
   border-radius: 12px;
   background-color: white;
 `;
 
 // ✅ Component library
-const PrimaryButton = styled(Pressable)`
+const PrimaryButton = styled.Pressable`
   padding: 12px 24px;
   background-color: #007AFF;
   border-radius: 8px;

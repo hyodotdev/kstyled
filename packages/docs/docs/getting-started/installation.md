@@ -61,9 +61,8 @@ Create a simple component to test:
 
 ```tsx
 import { styled } from 'kstyled';
-import { Text } from 'react-native';
 
-const Title = styled(Text)`
+const Title = styled.Text`
   font-size: 24px;
   color: #007AFF;
 `;

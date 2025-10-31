@@ -10,21 +10,20 @@ Use the `styled` function with template literals:
 
 ```tsx
 import { styled } from 'kstyled';
-import { View, Text, Pressable } from 'react-native';
 
-const Container = styled(View)`
+const Container = styled.View`
   flex: 1;
   padding: 20px;
   background-color: #f0f0f0;
 `;
 
-const Title = styled(Text)`
+const Title = styled.Text`
   font-size: 24px;
   font-weight: bold;
   color: #000;
 `;
 
-const Button = styled(Pressable)`
+const Button = styled.Pressable`
   padding: 12px 24px;
   background-color: #007AFF;
   border-radius: 8px;
@@ -53,7 +52,7 @@ export default function App() {
 kstyled supports standard CSS property names (kebab-case):
 
 ```tsx
-const Card = styled(View)`
+const Card = styled.View`
   background-color: white;
   border-radius: 12px;
   shadow-color: #000;
@@ -78,11 +77,11 @@ Properties are automatically converted to React Native's camelCase format (`back
 ### Nesting components
 
 ```tsx
-const Card = styled(View)`
+const Card = styled.View`
   padding: 16px;
 `;
 
-const CardTitle = styled(Text)`
+const CardTitle = styled.Text`
   font-size: 18px;
   font-weight: 600;
 `;
