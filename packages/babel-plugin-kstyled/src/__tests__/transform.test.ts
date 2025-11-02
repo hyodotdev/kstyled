@@ -328,6 +328,107 @@ describe('babel-plugin-kstyled', () => {
     });
   });
 
+  describe('Template Literal Interpolation with Units', () => {
+    test('should handle interpolation with px unit suffix', () => {
+      const input = `
+        import { styled } from 'kstyled';
+        import { View } from 'react-native';
+
+        const Box = styled(View)\`
+          width: \${({$size = 'medium'}) =>
+            $size === 'small' ? 16 : $size === 'large' ? 24 : 20}px;
+          height: \${({$size = 'medium'}) =>
+            $size === 'small' ? 16 : $size === 'large' ? 24 : 20}px;
+          border-radius: \${({$size = 'medium'}) =>
+            $size === 'small' ? 8 : $size === 'large' ? 12 : 10}px;
+        \`;
+      `;
+
+      const output = transform(input);
+
+      // Should contain width, height, borderRadius
+      expect(output).toContain('width');
+      expect(output).toContain('height');
+      expect(output).toContain('borderRadius');
+      // The px suffix should be stripped automatically
+      // Values should be numbers, not strings with 'px'
+      expect(output).not.toContain('px');
+      expect(output).toBeDefined();
+    });
+
+    test('should handle simple interpolation with px unit', () => {
+      const input = `
+        import { styled } from 'kstyled';
+        import { View } from 'react-native';
+
+        const SIZE = 16;
+        const Box = styled(View)\`
+          width: \${SIZE}px;
+          height: \${SIZE}px;
+        \`;
+      `;
+
+      const output = transform(input);
+
+      expect(output).toContain('width');
+      expect(output).toContain('height');
+      // px should be stripped from interpolations
+      expect(output).not.toContain('px');
+      expect(output).toBeDefined();
+    });
+
+    test('should handle multiple units in interpolations', () => {
+      const input = `
+        import { styled } from 'kstyled';
+        import { Text } from 'react-native';
+
+        const FONT_SIZE = 14;
+        const LINE_HEIGHT = 20;
+        const Label = styled(Text)\`
+          font-size: \${FONT_SIZE}px;
+          line-height: \${LINE_HEIGHT}px;
+          letter-spacing: \${0.5}px;
+        \`;
+      `;
+
+      const output = transform(input);
+
+      expect(output).toContain('fontSize');
+      expect(output).toContain('lineHeight');
+      expect(output).toContain('letterSpacing');
+      // All px units should be stripped
+      expect(output).not.toContain('px');
+    });
+
+    test('should handle string values with px units from functions', () => {
+      const input = `
+        import { styled } from 'kstyled';
+        import { View } from 'react-native';
+
+        const Box = styled(View)\`
+          width: \${({$size = 'medium'}) =>
+            $size === 'small' ? '16px' : $size === 'large' ? '24px' : '20px'};
+          height: \${({$size = 'medium'}) =>
+            $size === 'small' ? '16px' : $size === 'large' ? '24px' : '20px'};
+          border-radius: \${({$size = 'medium'}) =>
+            $size === 'small' ? '8px' : $size === 'large' ? '12px' : '10px'};
+        \`;
+      `;
+
+      const output = transform(input);
+
+      expect(output).toContain('width');
+      expect(output).toContain('height');
+      expect(output).toContain('borderRadius');
+      // String values like '16px' are preserved in the function
+      // They will be normalized at runtime by normalizeStyleValue
+      expect(output).toContain('16px');
+      expect(output).toContain('24px');
+      expect(output).toContain('20px');
+      expect(output).toBeDefined();
+    });
+  });
+
   describe('Comprehensive React Native Property Support', () => {
     test('should support all ViewStyle border properties', () => {
       const input = `

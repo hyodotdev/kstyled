@@ -112,6 +112,37 @@ const CurrentState = styled.Text`
   text-align: center;
 `;
 
+// Example 1: Number values with }px suffix (compile-time stripping)
+const SizeBox = styled.View<{ $size?: 'small' | 'medium' | 'large' }>`
+  width: ${({$size = 'medium'}) =>
+    $size === 'small' ? 16 : $size === 'large' ? 24 : 20}px;
+  height: ${({$size = 'medium'}) =>
+    $size === 'small' ? 16 : $size === 'large' ? 24 : 20}px;
+  border-radius: ${({$size = 'medium'}) =>
+    $size === 'small' ? 8 : $size === 'large' ? 12 : 10}px;
+  background-color: #007AFF;
+  margin: 8px;
+`;
+
+// Example 2: String values with 'px' (runtime normalization)
+const SizeBox2 = styled.View<{ $size?: 'small' | 'medium' | 'large' }>`
+  width: ${({$size = 'medium'}) =>
+    $size === 'small' ? '16px' : $size === 'large' ? '24px' : '20px'};
+  height: ${({$size = 'medium'}) =>
+    $size === 'small' ? '16px' : $size === 'large' ? '24px' : '20px'};
+  border-radius: ${({$size = 'medium'}) =>
+    $size === 'small' ? '8px' : $size === 'large' ? '12px' : '10px'};
+  background-color: #34C759;
+  margin: 8px;
+`;
+
+const BoxRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-vertical: 12px;
+`;
+
 export default function DynamicExampleScreen() {
   const [variant, setVariant] = useState<'primary' | 'danger' | 'success'>('primary');
 
@@ -217,6 +248,42 @@ const Button = styled(Pressable)<{ $variant: Variant }>\`
             ❌ Fixed, unchanging styles{'\n'}
             ❌ When maximum performance is critical
           </InfoText>
+        </Section>
+
+        <Section>
+          <SectionTitle>Unit Suffix Support</SectionTitle>
+          <InfoText>
+            kstyled supports CSS units in THREE ways:{'\n'}
+            {'\n'}
+            {'1. Number + '}{'}'}{' px suffix (compile-time)'}{'\n'}
+            {'2. String \'16px\' values (runtime)'}{'\n'}
+            {'3. Plain numbers (no unit)'}
+          </InfoText>
+          <CodeBlock>
+            <Code>{`// All three syntaxes work:
+// 1. Number with }px suffix
+width: \${size === 'small' ? 16 : 20}px;
+
+// 2. String with 'px'
+width: \${size === 'small' ? '16px' : '20px'};
+
+// 3. Plain number
+width: \${size === 'small' ? 16 : 20};`}</Code>
+          </CodeBlock>
+          <InfoText style={{marginTop: 12}}>
+            {'Blue boxes: Number + '}{'}'}{' px (compile-time)'}{'\n'}
+            {'Green boxes: String \'px\' (runtime)'}
+          </InfoText>
+          <BoxRow>
+            <SizeBox $size="small" />
+            <SizeBox $size="medium" />
+            <SizeBox $size="large" />
+          </BoxRow>
+          <BoxRow>
+            <SizeBox2 $size="small" />
+            <SizeBox2 $size="medium" />
+            <SizeBox2 $size="large" />
+          </BoxRow>
         </Section>
 
         <Section>

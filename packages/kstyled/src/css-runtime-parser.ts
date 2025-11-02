@@ -68,6 +68,7 @@ function convertProperty(prop: string): string {
 
 /**
  * Parse CSS value to appropriate type
+ * Converts string values like '16px' to numbers
  */
 function parseValue(value: string): any {
   const trimmed = value.trim();
@@ -91,6 +92,20 @@ function parseValue(value: string): any {
 
   // Return as-is
   return trimmed;
+}
+
+/**
+ * Normalize a style value by converting string values with units to numbers
+ * Used for runtime dynamic values that may return '16px' instead of 16
+ */
+export function normalizeStyleValue(value: any): any {
+  // Handle string values
+  if (typeof value === 'string') {
+    return parseValue(value);
+  }
+
+  // Return non-string values as-is (numbers, objects, etc.)
+  return value;
 }
 
 /**

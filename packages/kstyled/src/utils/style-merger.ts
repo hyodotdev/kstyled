@@ -1,5 +1,6 @@
 import type { StyleMetadata, StyleArray, StyleValue, StyleObject, PropsWithTheme, DynamicPatchFunction } from '../types/styled-types';
 import type { CompiledStyles } from '../types';
+import { normalizeStyleValue } from '../css-runtime-parser';
 
 /**
  * Build style array with correct priority order:
@@ -47,8 +48,26 @@ export function buildStyleArray(
 }
 
 /**
+ * Normalize all values in a style object
+ * Converts string values like '16px' to numbers
+ */
+function normalizeStyleObject(styleObj: StyleObject | null): StyleObject | null {
+  if (!styleObj) return null;
+
+  const normalized: StyleObject = {};
+  for (const key in styleObj) {
+    if (Object.prototype.hasOwnProperty.call(styleObj, key)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (normalized as any)[key] = normalizeStyleValue((styleObj as any)[key]);
+    }
+  }
+  return normalized;
+}
+
+/**
  * Merge dynamic patches from parent and child components
  * Child patches override parent patches for the same properties
+ * Also normalizes string values with units (e.g., '16px' -> 16)
  */
 export function mergeDynamicPatches(
   baseMetadata: StyleMetadata,
@@ -68,7 +87,10 @@ export function mergeDynamicPatches(
     return null;
   }
 
-  return { ...baseDynamicPatch, ...childDynamicPatch };
+  const merged = { ...baseDynamicPatch, ...childDynamicPatch };
+
+  // Normalize all values in the merged patch
+  return normalizeStyleObject(merged);
 }
 
 /**
