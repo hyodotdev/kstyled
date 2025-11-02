@@ -2,6 +2,8 @@ import { StyleSheet, View, Text } from 'react-native';
 import { styled } from '../styled';
 import { css } from '../css';
 import type { CompiledStyles, StyleMetadata } from '../types';
+import { normalizeStyleValue } from '../css-runtime-parser';
+import { mergeDynamicPatches } from '../utils/style-merger';
 
 describe('kstyled Runtime Tests', () => {
   describe('Static Styles', () => {
@@ -509,6 +511,101 @@ describe('kstyled Runtime Tests', () => {
       expect(metadata2.compiledStyles).toBeDefined();
       expect(metadata1.compiledStyles.base).toMatchObject(staticStyles.base);
       expect(metadata2.compiledStyles.base).toMatchObject(staticStyles.base);
+    });
+  });
+
+  describe('normalizeStyleValue', () => {
+    test('should convert string values with px to numbers', () => {
+      expect(normalizeStyleValue('16px')).toBe(16);
+      expect(normalizeStyleValue('24px')).toBe(24);
+      expect(normalizeStyleValue('1.5px')).toBe(1.5);
+    });
+
+    test('should convert string values with em/rem to numbers', () => {
+      expect(normalizeStyleValue('2em')).toBe(2);
+      expect(normalizeStyleValue('1.5rem')).toBe(1.5);
+    });
+
+    test('should convert negative string values', () => {
+      expect(normalizeStyleValue('-10px')).toBe(-10);
+      expect(normalizeStyleValue('-5')).toBe(-5);
+    });
+
+    test('should preserve percentage values as strings', () => {
+      expect(normalizeStyleValue('50%')).toBe('50%');
+      expect(normalizeStyleValue('100%')).toBe('100%');
+    });
+
+    test('should preserve quoted string values', () => {
+      expect(normalizeStyleValue('"red"')).toBe('red');
+      expect(normalizeStyleValue("'blue'")).toBe('blue');
+    });
+
+    test('should preserve non-string values', () => {
+      expect(normalizeStyleValue(16)).toBe(16);
+      expect(normalizeStyleValue(0)).toBe(0);
+      expect(normalizeStyleValue(null)).toBe(null);
+      expect(normalizeStyleValue(undefined)).toBe(undefined);
+    });
+
+    test('should preserve color strings and keywords', () => {
+      expect(normalizeStyleValue('red')).toBe('red');
+      expect(normalizeStyleValue('#FF0000')).toBe('#FF0000');
+      expect(normalizeStyleValue('transparent')).toBe('transparent');
+    });
+  });
+
+  describe('Dynamic styles with string px values', () => {
+    test('should normalize string px values from getDynamicPatch', () => {
+      const getDynamicPatch = (props: any): any => ({
+        width: props.$size === 'small' ? '16px' : '20px',
+        height: props.$size === 'small' ? '16px' : '20px',
+      });
+
+      const baseMetadata = {};
+      const props = { $size: 'small' };
+
+      // Call mergeDynamicPatches to test actual normalization
+      const normalized = mergeDynamicPatches(
+        baseMetadata,
+        getDynamicPatch,
+        props as any
+      );
+
+      // Verify that string px values are normalized to numbers
+      expect(normalized).toBeDefined();
+      expect(normalized?.width).toBe(16);
+      expect(normalized?.height).toBe(16);
+    });
+
+    test('should normalize transform arrays with string px values', () => {
+      const getDynamicPatch = (props: any): any => ({
+        transform: [
+          { translateX: props.$offset ? '10px' : '0px' },
+          { translateY: '5px' },
+          { scale: 1.5 },
+        ],
+      });
+
+      const baseMetadata = {};
+      const props = { $offset: true };
+
+      // Call mergeDynamicPatches to test actual normalization
+      const normalized = mergeDynamicPatches(
+        baseMetadata,
+        getDynamicPatch,
+        props as any
+      );
+
+      // Verify that transform array values are normalized
+      expect(normalized).toBeDefined();
+      expect(normalized?.transform).toBeDefined();
+      expect(Array.isArray(normalized?.transform)).toBe(true);
+
+      const transform = normalized?.transform as any[];
+      expect(transform[0].translateX).toBe(10); // '10px' -> 10
+      expect(transform[1].translateY).toBe(5);  // '5px' -> 5
+      expect(transform[2].scale).toBe(1.5);     // number unchanged
     });
   });
 });

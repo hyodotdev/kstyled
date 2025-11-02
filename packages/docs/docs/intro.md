@@ -17,6 +17,7 @@ Traditional CSS-in-JS libraries like styled-components and emotion parse and com
 
 - **Zero runtime overhead** - Styles are pre-compiled to StyleSheet objects
 - **Familiar API** - Use the styled-components syntax you already know
+- **More flexible syntax** - Supports `${16}px`, `${'16px'}`, and `${16}` (unlike styled-components/emotion)
 - **Type safety** - Full TypeScript support with prop inference
 - **Smaller bundles** - Minimal runtime code (~260 lines)
 - **Build-time validation** - Catch CSS errors during compilation
@@ -48,6 +49,7 @@ Static styles are extracted at compile time, while dynamic prop-based styles rem
 | Runtime overhead | Zero | High | Medium-High |
 | Build-time CSS validation | ✅ | ❌ | ⚠️ (with plugin) |
 | StyleSheet.create | ✅ | ❌ | ❌ |
+| Flexible unit syntax | `${16}px`, `${'16px'}`, `${16}` | `${16}` only | `${16}` only |
 | API familiarity | styled-components | ✅ | Similar |
 
 ## Next steps

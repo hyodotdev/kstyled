@@ -36,9 +36,10 @@
     "prepublish": "pnpm build && pnpm typecheck && pnpm test",
     "publish:packages": "pnpm publish -r --filter '!example' --filter '!kstyled-docs' --access public",
     "publish:dry": "pnpm publish -r --filter '!example' --filter '!kstyled-docs' --access public --dry-run",
-    "version:patch": "pnpm -r --filter '!example' --filter '!kstyled-docs' exec npm version patch --no-git-tag-version",
-    "version:minor": "pnpm -r --filter '!example' --filter '!kstyled-docs' exec npm version minor --no-git-tag-version",
-    "version:major": "pnpm -r --filter '!example' --filter '!kstyled-docs' exec npm version major --no-git-tag-version"
+    "version:patch": "node scripts/bump-version.js patch",
+    "version:minor": "node scripts/bump-version.js minor",
+    "version:major": "node scripts/bump-version.js major",
+    "version:get": "node -p \"require('./packages/kstyled/package.json').version\""
   },
   "devDependencies": {
     "@turbo/gen": "^2.3.3",

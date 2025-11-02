@@ -54,6 +54,7 @@ export default function App() {
 
 - ⚡️ **Zero runtime** - Styles compiled to `StyleSheet.create` at build time
 - 🎨 **Familiar API** - styled-components syntax you already know
+- ✨ **Flexible syntax** - Supports `${16}px`, `${'16px'}`, and `${16}` (unlike styled-components/emotion)
 - 🎭 **Theme support** - Built-in ThemeProvider with TypeScript
 - 💪 **Full TypeScript** - Complete type inference
 - 📦 **Tiny bundle** - Minimal runtime code

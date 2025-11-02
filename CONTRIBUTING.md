@@ -268,34 +268,66 @@ bun run dev
 
 ### Publishing a New Version
 
-1. **Update package versions**
+We support two methods for publishing: **GitHub Actions (Recommended)** and **Manual**.
 
-   **Option A: Automatic (Recommended)**
+#### Method 1: GitHub Actions (Recommended)
+
+The easiest way to publish is using the automated GitHub Actions workflow:
+
+1. **Go to GitHub Actions**
+
+   Navigate to: `https://github.com/hyodotdev/kstyled/actions/workflows/publish.yml`
+
+2. **Run workflow**
+
+   - Click "Run workflow"
+   - Select branch: `main`
+   - Choose version bump type:
+     - `patch` - Bug fixes (0.3.0 → 0.3.1)
+     - `minor` - New features (0.3.0 → 0.4.0)
+     - `major` - Breaking changes (0.3.0 → 1.0.0)
+   - Optional: Check "Dry run" to test without publishing
+
+3. **Wait for completion**
+
+   The workflow will automatically:
+   - ✅ Build all packages
+   - ✅ Run type checking and tests
+   - ✅ Bump versions in both packages
+   - ✅ Commit and push changes
+   - ✅ Publish to npm (with OIDC authentication)
+   - ✅ Create git tag
+   - ✅ Create GitHub Release with auto-generated notes
+
+4. **Verify**
+
+   Check that:
+   - New version appears on npm
+   - GitHub Release is created
+   - Git tag is pushed
+
+**Note**: The workflow uses OpenID Connect (OIDC) for npm authentication, so no NPM_TOKEN is needed.
+
+#### Method 2: Manual Publishing
+
+If you need to publish manually:
+
+1. **Update package versions**
 
    Use the version scripts to automatically bump versions in both packages:
 
    ```bash
-   pnpm version:patch  # 0.1.2 → 0.1.3 (bug fixes)
-   pnpm version:minor  # 0.1.3 → 0.2.0 (new features)
-   pnpm version:major  # 0.2.0 → 1.0.0 (breaking changes)
+   pnpm version:patch  # 0.3.0 → 0.3.1 (bug fixes)
+   pnpm version:minor  # 0.3.0 → 0.4.0 (new features)
+   pnpm version:major  # 0.3.0 → 1.0.0 (breaking changes)
    ```
 
-   This updates both `kstyled` and `babel-plugin-kstyled` at once.
-
-   **Option B: Manual**
-
-   Manually edit version in both packages:
-   - `packages/kstyled/package.json`
-   - `packages/babel-plugin-kstyled/package.json`
-
-   Example: `"version": "0.1.3"`
-
-   > **Note**: The root `package.json` version is for development only and doesn't affect npm publishing.
+   This updates both `kstyled` and `babel-plugin-kstyled` at once using the custom `scripts/bump-version.js` script.
 
 2. **Build and test everything**
 
    ```bash
-   pnpm build && pnpm typecheck && pnpm lint
+   pnpm build && pnpm typecheck && pnpm test
    ```
 
    Make sure all checks pass with 0 errors.
@@ -304,7 +336,8 @@ bun run dev
 
    ```bash
    git add packages/*/package.json
-   git commit -m "chore: bump version to 0.1.3"
+   git commit -m "chore: release v0.3.1"
+   git tag v0.3.1
    ```
 
 4. **Verify npm login**
@@ -339,6 +372,12 @@ bun run dev
    pnpm publish:packages
    ```
 
+   For provenance (recommended):
+
+   ```bash
+   pnpm publish:packages --provenance
+   ```
+
    This publishes both `kstyled` and `babel-plugin-kstyled` to npm with public access as the `latest` version.
 
    **Option B: Beta/Preview Release (next tag)**
@@ -347,27 +386,26 @@ bun run dev
    pnpm publish:packages --tag next
    ```
 
-   This publishes both packages with the `next` tag, allowing users to test pre-release versions without affecting the stable `latest` version:
-
-   ```bash
-   # Users can install the next version with:
-   npm install kstyled@next babel-plugin-kstyled@next
-   ```
-
    Use this for:
    - Testing major changes before stable release
    - Preview releases for early adopters
    - Release candidates (e.g., `0.3.0-rc.1`)
 
-7. **Create and push git tag**
+7. **Push changes and tags**
 
    ```bash
-   git tag v0.1.3
-   git push
-   git push --tags
+   git push origin main
+   git push origin v0.3.1
    ```
 
-8. **Verify publication**
+8. **Create GitHub Release (optional)**
+
+   Go to: `https://github.com/hyodotdev/kstyled/releases/new`
+   - Select the tag you just pushed
+   - Generate release notes automatically
+   - Publish release
+
+9. **Verify publication**
 
    ```bash
    npm view kstyled version
