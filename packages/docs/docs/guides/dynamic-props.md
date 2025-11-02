@@ -102,6 +102,83 @@ const Card = styled.View<{ $highlighted?: boolean }>`
 `;
 ```
 
+## Flexible unit handling
+
+Unlike styled-components or emotion, kstyled supports **three different ways** to specify numeric values with units, giving you more flexibility:
+
+### 1. Number with px suffix (compile-time)
+
+The px unit is stripped at build time by the Babel plugin:
+
+```tsx
+const Box = styled.View<{ $size?: 'small' | 'large' }>`
+  width: ${p => p.$size === 'small' ? 16 : 24}px;
+  height: ${p => p.$size === 'small' ? 16 : 24}px;
+`;
+```
+
+### 2. String with 'px' (runtime)
+
+String values with units are automatically normalized at runtime:
+
+```tsx
+const Box = styled.View<{ $size?: 'small' | 'large' }>`
+  width: ${p => p.$size === 'small' ? '16px' : '24px'};
+  height: ${p => p.$size === 'small' ? '16px' : '24px'};
+`;
+```
+
+### 3. Plain numbers (no unit)
+
+Direct numeric values work as-is (React Native default):
+
+```tsx
+const Box = styled.View<{ $size?: 'small' | 'large' }>`
+  width: ${p => p.$size === 'small' ? 16 : 24};
+  height: ${p => p.$size === 'small' ? 16 : 24};
+`;
+```
+
+### Comparison with other libraries
+
+| Feature | kstyled | styled-components | emotion |
+|---------|---------|-------------------|---------|
+| `${16}px` | ✅ Yes | ❌ No | ❌ No |
+| `${'16px'}` | ✅ Yes | ❌ No | ❌ No |
+| `${16}` | ✅ Yes | ✅ Yes | ✅ Yes |
+
+**Why this matters:**
+
+- **More forgiving**: Works with values from APIs or external sources that might return strings
+- **Better DX**: No need to parse `'16px'` to `16` manually
+- **Transform arrays**: Automatically handles `transform: [{ translateX: '10px' }]`
+
+### Supported units
+
+All CSS units are automatically normalized:
+
+```tsx
+const Text = styled.Text<{ $spacing?: string }>`
+  font-size: ${p => p.$spacing || '14px'};  // px
+  line-height: ${p => '1.5em'};              // em
+  letter-spacing: ${p => '0.5rem'};          // rem
+`;
+```
+
+### Transform arrays
+
+Even nested transform objects are normalized:
+
+```tsx
+const Animated = styled.View<{ $offset?: number }>`
+  transform: ${p => [
+    { translateX: `${p.$offset || 0}px` },
+    { translateY: '10px' },
+    { scale: 1.5 }
+  ]};
+`;
+```
+
 ## Performance tip
 
 For best performance, keep dynamic styles minimal. More static styles = better performance:
