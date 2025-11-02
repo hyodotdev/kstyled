@@ -576,5 +576,29 @@ describe('kstyled Runtime Tests', () => {
       // The normalization happens in mergeDynamicPatches
       expect(result).toBeDefined();
     });
+
+    test('should normalize transform arrays with string px values', () => {
+      const getDynamicPatch = (props: any): any => ({
+        transform: [
+          { translateX: props.$offset ? '10px' : '0px' },
+          { translateY: '5px' },
+          { scale: 1.5 },
+        ],
+      });
+
+      const StyledView = styled(View).__withStyles({
+        getDynamicPatch: getDynamicPatch as any,
+      });
+
+      expect(StyledView).toBeDefined();
+      const metadata = (StyledView as any).__kstyled_metadata__;
+      expect(metadata.getDynamicPatch).toBeDefined();
+
+      // Test that transform arrays are normalized
+      const result = metadata.getDynamicPatch({ $offset: true });
+      expect(result).toBeDefined();
+      expect(result.transform).toBeDefined();
+      expect(Array.isArray(result.transform)).toBe(true);
+    });
   });
 });

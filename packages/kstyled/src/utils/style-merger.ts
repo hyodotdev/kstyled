@@ -50,6 +50,7 @@ export function buildStyleArray(
 /**
  * Normalize all values in a style object
  * Converts string values like '16px' to numbers
+ * Handles nested transform arrays
  */
 function normalizeStyleObject(styleObj: StyleObject | null): StyleObject | null {
   if (!styleObj) return null;
@@ -58,7 +59,28 @@ function normalizeStyleObject(styleObj: StyleObject | null): StyleObject | null 
   for (const key in styleObj) {
     if (Object.prototype.hasOwnProperty.call(styleObj, key)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (normalized as any)[key] = normalizeStyleValue((styleObj as any)[key]);
+      const value = (styleObj as any)[key];
+
+      // Handle transform array specially
+      if (key === 'transform' && Array.isArray(value)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (normalized as any)[key] = value.map((transformObj: any) => {
+          if (typeof transformObj === 'object' && transformObj !== null) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const normalizedTransform: any = {};
+            for (const transformKey in transformObj) {
+              if (Object.prototype.hasOwnProperty.call(transformObj, transformKey)) {
+                normalizedTransform[transformKey] = normalizeStyleValue(transformObj[transformKey]);
+              }
+            }
+            return normalizedTransform;
+          }
+          return transformObj;
+        });
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (normalized as any)[key] = normalizeStyleValue(value);
+      }
     }
   }
   return normalized;

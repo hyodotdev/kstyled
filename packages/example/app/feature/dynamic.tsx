@@ -112,7 +112,7 @@ const CurrentState = styled.Text`
   text-align: center;
 `;
 
-// Example 1: Number values with }px suffix (compile-time stripping)
+// Example 1: Number values with px suffix (compile-time stripping)
 const SizeBox = styled.View<{ $size?: 'small' | 'medium' | 'large' }>`
   width: ${({$size = 'medium'}) =>
     $size === 'small' ? 16 : $size === 'large' ? 24 : 20}px;
