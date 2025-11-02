@@ -96,7 +96,6 @@ jobs:
       - name: Publish to npm
         if: ${{ !inputs.dry-run }}
         run: pnpm publish:packages --provenance --no-git-checks
-        # Trusted Publishers (OIDC) 사용으로 NODE_AUTH_TOKEN 불필요
 
       - name: Push changes
         if: ${{ !inputs.dry-run }}
@@ -105,12 +104,14 @@ jobs:
           git push origin v${{ steps.version.outputs.VERSION }}
 
       - name: Create GitHub Release
-        if: ${{ !inputs.dry-run }}
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event.inputs.version
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.VERSION }}
-          release_name: Release v${{ steps.version.outputs.VERSION }}
+          tag_name: ${{ github.event.inputs.version }}
+          name: ${{ github.event.inputs.version }}
           draft: false
           prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
