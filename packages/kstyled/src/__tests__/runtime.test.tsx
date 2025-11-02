@@ -3,6 +3,7 @@ import { styled } from '../styled';
 import { css } from '../css';
 import type { CompiledStyles, StyleMetadata } from '../types';
 import { normalizeStyleValue } from '../css-runtime-parser';
+import { mergeDynamicPatches } from '../utils/style-merger';
 
 describe('kstyled Runtime Tests', () => {
   describe('Static Styles', () => {
@@ -561,20 +562,20 @@ describe('kstyled Runtime Tests', () => {
         height: props.$size === 'small' ? '16px' : '20px',
       });
 
-      const StyledView = styled(View).__withStyles({
-        getDynamicPatch: getDynamicPatch as any,
-      });
+      const baseMetadata = {};
+      const props = { $size: 'small' };
 
-      expect(StyledView).toBeDefined();
-      const metadata = (StyledView as any).__kstyled_metadata__;
-      expect(metadata.getDynamicPatch).toBeDefined();
+      // Call mergeDynamicPatches to test actual normalization
+      const normalized = mergeDynamicPatches(
+        baseMetadata,
+        getDynamicPatch,
+        props as any
+      );
 
-      // Test that the function works and returns normalized values
-      const result = metadata.getDynamicPatch({ $size: 'small' });
-      // The mergeDynamicPatches should normalize the values
-      // But since we're testing the metadata directly, we get the raw values
-      // The normalization happens in mergeDynamicPatches
-      expect(result).toBeDefined();
+      // Verify that string px values are normalized to numbers
+      expect(normalized).toBeDefined();
+      expect(normalized?.width).toBe(16);
+      expect(normalized?.height).toBe(16);
     });
 
     test('should normalize transform arrays with string px values', () => {
@@ -586,19 +587,25 @@ describe('kstyled Runtime Tests', () => {
         ],
       });
 
-      const StyledView = styled(View).__withStyles({
-        getDynamicPatch: getDynamicPatch as any,
-      });
+      const baseMetadata = {};
+      const props = { $offset: true };
 
-      expect(StyledView).toBeDefined();
-      const metadata = (StyledView as any).__kstyled_metadata__;
-      expect(metadata.getDynamicPatch).toBeDefined();
+      // Call mergeDynamicPatches to test actual normalization
+      const normalized = mergeDynamicPatches(
+        baseMetadata,
+        getDynamicPatch,
+        props as any
+      );
 
-      // Test that transform arrays are normalized
-      const result = metadata.getDynamicPatch({ $offset: true });
-      expect(result).toBeDefined();
-      expect(result.transform).toBeDefined();
-      expect(Array.isArray(result.transform)).toBe(true);
+      // Verify that transform array values are normalized
+      expect(normalized).toBeDefined();
+      expect(normalized?.transform).toBeDefined();
+      expect(Array.isArray(normalized?.transform)).toBe(true);
+
+      const transform = normalized?.transform as any[];
+      expect(transform[0].translateX).toBe(10); // '10px' -> 10
+      expect(transform[1].translateY).toBe(5);  // '5px' -> 5
+      expect(transform[2].scale).toBe(1.5);     // number unchanged
     });
   });
 });
