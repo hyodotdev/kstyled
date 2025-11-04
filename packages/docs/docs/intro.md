@@ -49,7 +49,7 @@ Static styles are extracted at compile time, while dynamic prop-based styles rem
 | Runtime overhead | Zero | High | Medium-High |
 | Build-time CSS validation | ✅ | ❌ | ⚠️ (with plugin) |
 | StyleSheet.create | ✅ | ❌ | ❌ |
-| Flexible unit syntax | `${16}px`, `${'16px'}`, `${16}` | `${16}` only | `${16}` only |
+| Flexible unit syntax | `${16}px`, `${'16px'}`, `${16}` | `${16}` only | `${16}px` only |
 | API familiarity | styled-components | ✅ | Similar |
 
 ## Next steps

@@ -143,9 +143,9 @@ const Box = styled.View<{ $size?: 'small' | 'large' }>`
 
 | Feature | kstyled | styled-components | emotion |
 |---------|---------|-------------------|---------|
-| `${16}px` | ✅ Yes | ❌ No | ❌ No |
+| `${16}px` | ✅ Yes | ✅ Yes | ✅ Yes |
 | `${'16px'}` | ✅ Yes | ❌ No | ❌ No |
-| `${16}` | ✅ Yes | ✅ Yes | ✅ Yes |
+| `${16}` | ✅ Yes | ❌ No | ❌ No |
 
 **Why this matters:**
 
