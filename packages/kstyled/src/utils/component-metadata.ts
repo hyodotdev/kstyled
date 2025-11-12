@@ -13,6 +13,11 @@ export function isAnimatedComponent(component: ComponentType<unknown>): boolean 
 /**
  * Extract metadata from a base component
  * Returns empty object for Animated components or if no metadata exists
+ *
+ * This function handles various component types:
+ * - Direct styled components with __kstyled_metadata__
+ * - forwardRef wrapped styled components
+ * - React.memo wrapped styled components
  */
 export function extractBaseMetadata(
   baseComponent: ComponentType<unknown>
@@ -21,8 +26,36 @@ export function extractBaseMetadata(
     return {};
   }
 
+  // Check if component has metadata directly
   if ('__kstyled_metadata__' in baseComponent) {
     return (baseComponent as ComponentWithMetadata).__kstyled_metadata__ || {};
+  }
+
+  // Check if it's a forwardRef component (has $$typeof and render)
+  // @ts-expect-error - Accessing internal React properties
+  if (baseComponent.$$typeof && baseComponent.render) {
+    // @ts-expect-error - Accessing internal React properties
+    const renderFunc = baseComponent.render;
+    if (renderFunc && '__kstyled_metadata__' in renderFunc) {
+      return (renderFunc as ComponentWithMetadata).__kstyled_metadata__ || {};
+    }
+  }
+
+  // Check if it's a React.memo component (has $$typeof and type)
+  // @ts-expect-error - Accessing internal React properties
+  if (baseComponent.$$typeof && baseComponent.type) {
+    // @ts-expect-error - Accessing internal React properties
+    const wrappedComponent = baseComponent.type;
+    if (wrappedComponent && '__kstyled_metadata__' in wrappedComponent) {
+      return (wrappedComponent as ComponentWithMetadata).__kstyled_metadata__ || {};
+    }
+    // Also check if the wrapped component is a forwardRef
+    if (wrappedComponent.$$typeof && wrappedComponent.render) {
+      const renderFunc = wrappedComponent.render;
+      if (renderFunc && '__kstyled_metadata__' in renderFunc) {
+        return (renderFunc as ComponentWithMetadata).__kstyled_metadata__ || {};
+      }
+    }
   }
 
   return {};
