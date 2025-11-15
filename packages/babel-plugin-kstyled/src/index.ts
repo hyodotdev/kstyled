@@ -595,12 +595,13 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
               }
             }
 
-            // Create style expression: props.style ? [props.style, __ks.base] : __ks.base
+            // Create style expression: props.style ? [__ks.base, props.style] : __ks.base
+            // IMPORTANT: Base styles first, external styles last (external overrides base)
             const styleExpression = t.conditionalExpression(
               t.memberExpression(t.identifier('props'), t.identifier('style')),
               t.arrayExpression([
-                t.memberExpression(t.identifier('props'), t.identifier('style')),
                 t.memberExpression(t.identifier(styleId), t.identifier('base')),
+                t.memberExpression(t.identifier('props'), t.identifier('style')),
               ]),
               t.memberExpression(t.identifier(styleId), t.identifier('base'))
             );

@@ -137,18 +137,24 @@ export const css: CssFactory = Object.assign(
           const parts = value.split(/\s+/);
           const prefix = camelProp; // 'padding' or 'margin'
 
+          // IMPORTANT: Always use longhand properties for proper override in React Native
           if (parts.length === 1) {
             const val = parseFloat(parts[0]);
-            styleObj[`${prefix}Vertical`] = val;
-            styleObj[`${prefix}Horizontal`] = val;
+            styleObj[`${prefix}Top`] = val;
+            styleObj[`${prefix}Right`] = val;
+            styleObj[`${prefix}Bottom`] = val;
+            styleObj[`${prefix}Left`] = val;
           } else if (parts.length === 2) {
-            styleObj[`${prefix}Vertical`] = parseFloat(parts[0]);
-            styleObj[`${prefix}Horizontal`] = parseFloat(parts[1]);
+            styleObj[`${prefix}Top`] = parseFloat(parts[0]);
+            styleObj[`${prefix}Right`] = parseFloat(parts[1]);
+            styleObj[`${prefix}Bottom`] = parseFloat(parts[0]);
+            styleObj[`${prefix}Left`] = parseFloat(parts[1]);
           } else if (parts.length === 3) {
             // top, horizontal, bottom
             styleObj[`${prefix}Top`] = parseFloat(parts[0]);
-            styleObj[`${prefix}Horizontal`] = parseFloat(parts[1]);
+            styleObj[`${prefix}Right`] = parseFloat(parts[1]);
             styleObj[`${prefix}Bottom`] = parseFloat(parts[2]);
+            styleObj[`${prefix}Left`] = parseFloat(parts[1]);
           } else if (parts.length === 4) {
             styleObj[`${prefix}Top`] = parseFloat(parts[0]);
             styleObj[`${prefix}Right`] = parseFloat(parts[1]);

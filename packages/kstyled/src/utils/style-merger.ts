@@ -3,6 +3,68 @@ import type { CompiledStyles } from '../types';
 import { normalizeStyleValue } from '../css-runtime-parser';
 
 /**
+ * Expand shorthand padding/margin properties to longhand
+ * This is necessary because base styles use longhand properties (paddingTop, paddingRight, etc.)
+ * and React Native gives longhand higher priority than shorthand (paddingHorizontal/paddingVertical)
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function expandShorthandProperties(styleObj: any): any {
+  if (!styleObj || typeof styleObj !== 'object') {
+    return styleObj;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = {};
+
+  for (const key in styleObj) {
+    if (Object.prototype.hasOwnProperty.call(styleObj, key)) {
+      const value = styleObj[key];
+
+      // Expand padding shorthand to all four sides
+      if (key === 'padding') {
+        result.paddingTop = value;
+        result.paddingRight = value;
+        result.paddingBottom = value;
+        result.paddingLeft = value;
+      }
+      // Expand margin shorthand to all four sides
+      else if (key === 'margin') {
+        result.marginTop = value;
+        result.marginRight = value;
+        result.marginBottom = value;
+        result.marginLeft = value;
+      }
+      // Expand paddingHorizontal to paddingLeft + paddingRight
+      else if (key === 'paddingHorizontal') {
+        result.paddingLeft = value;
+        result.paddingRight = value;
+      }
+      // Expand paddingVertical to paddingTop + paddingBottom
+      else if (key === 'paddingVertical') {
+        result.paddingTop = value;
+        result.paddingBottom = value;
+      }
+      // Expand marginHorizontal to marginLeft + marginRight
+      else if (key === 'marginHorizontal') {
+        result.marginLeft = value;
+        result.marginRight = value;
+      }
+      // Expand marginVertical to marginTop + marginBottom
+      else if (key === 'marginVertical') {
+        result.marginTop = value;
+        result.marginBottom = value;
+      }
+      // Keep all other properties as-is
+      else {
+        result[key] = value;
+      }
+    }
+  }
+
+  return result;
+}
+
+/**
  * Build style array with correct priority order:
  * 1. Compiled static styles (lowest priority)
  * 2. Dynamic patch styles
@@ -29,18 +91,23 @@ export function buildStyleArray(
   }
 
   // Add external styles last (highest priority)
+  // IMPORTANT: Expand shorthand properties to match base style specificity
   if (externalStyle) {
     if (Array.isArray(externalStyle)) {
       // Handle nested arrays from StyleProp
       for (const style of externalStyle) {
         if (style) {
+          // Expand shorthand properties for proper override
+          const expanded = expandShorthandProperties(style);
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          styles.push(style as any);
+          styles.push(expanded as any);
         }
       }
     } else {
+      // Expand shorthand properties for proper override
+      const expanded = expandShorthandProperties(externalStyle);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      styles.push(externalStyle as any);
+      styles.push(expanded as any);
     }
   }
 
