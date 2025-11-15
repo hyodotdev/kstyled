@@ -25,9 +25,11 @@ describe('babel-plugin-kstyled', () => {
 
       const output = transform(input);
 
-      // Should contain paddingVertical and paddingHorizontal
-      expect(output).toContain('paddingVertical');
-      expect(output).toContain('paddingHorizontal');
+      // Should expand to longhand properties (not paddingVertical/paddingHorizontal)
+      expect(output).toContain('paddingTop');
+      expect(output).toContain('paddingRight');
+      expect(output).toContain('paddingBottom');
+      expect(output).toContain('paddingLeft');
       // Should NOT contain the shorthand 'padding' property
       expect(output).not.toContain('padding:');
     });
@@ -62,8 +64,11 @@ describe('babel-plugin-kstyled', () => {
 
       const output = transform(input);
 
-      expect(output).toContain('marginVertical');
-      expect(output).toContain('marginHorizontal');
+      // Should expand to longhand properties (not marginVertical/marginHorizontal)
+      expect(output).toContain('marginTop');
+      expect(output).toContain('marginRight');
+      expect(output).toContain('marginBottom');
+      expect(output).toContain('marginLeft');
     });
 
     test('should expand multiple shorthand properties', () => {
@@ -80,10 +85,15 @@ describe('babel-plugin-kstyled', () => {
 
       const output = transform(input);
 
-      expect(output).toContain('paddingVertical');
-      expect(output).toContain('paddingHorizontal');
-      expect(output).toContain('marginVertical');
-      expect(output).toContain('marginHorizontal');
+      // Should expand all shorthands to longhand
+      expect(output).toContain('paddingTop');
+      expect(output).toContain('paddingRight');
+      expect(output).toContain('paddingBottom');
+      expect(output).toContain('paddingLeft');
+      expect(output).toContain('marginTop');
+      expect(output).toContain('marginRight');
+      expect(output).toContain('marginBottom');
+      expect(output).toContain('marginLeft');
       expect(output).toContain('backgroundColor');
     });
   });
@@ -146,9 +156,11 @@ describe('babel-plugin-kstyled', () => {
 
       // Should have getDynamicPatch function
       expect(output).toContain('getDynamicPatch');
-      // Should have static padding styles
-      expect(output).toContain('paddingVertical');
-      expect(output).toContain('paddingHorizontal');
+      // Should have static padding styles expanded to longhand
+      expect(output).toContain('paddingTop');
+      expect(output).toContain('paddingRight');
+      expect(output).toContain('paddingBottom');
+      expect(output).toContain('paddingLeft');
       // Dynamic function should be called with (p)
       expect(output).toMatch(/backgroundColor.*\(p\)/);
     });
@@ -214,9 +226,11 @@ describe('babel-plugin-kstyled', () => {
 
       const output = transform(input);
 
-      // Should expand padding shorthand
-      expect(output).toContain('paddingVertical');
-      expect(output).toContain('paddingHorizontal');
+      // Should expand padding shorthand to longhand
+      expect(output).toContain('paddingTop');
+      expect(output).toContain('paddingRight');
+      expect(output).toContain('paddingBottom');
+      expect(output).toContain('paddingLeft');
       // Should have attrs
       expect(output).toContain('attrs');
       expect(output).toContain('placeholder');
@@ -266,9 +280,11 @@ describe('babel-plugin-kstyled', () => {
 
       const output = transform(input);
 
-      // Static styles
-      expect(output).toContain('paddingVertical');
-      expect(output).toContain('paddingHorizontal');
+      // Static styles - padding shorthand expanded to longhand
+      expect(output).toContain('paddingTop');
+      expect(output).toContain('paddingRight');
+      expect(output).toContain('paddingBottom');
+      expect(output).toContain('paddingLeft');
       expect(output).toContain('borderRadius');
       expect(output).toContain('alignItems');
       expect(output).toContain('marginVertical');
@@ -686,11 +702,15 @@ describe('babel-plugin-kstyled', () => {
       `;
 
       const output = transform(input);
-      // Should expand shorthand with mixed units
-      expect(output).toContain('paddingVertical');
-      expect(output).toContain('paddingHorizontal');
-      expect(output).toContain('marginVertical');
-      expect(output).toContain('marginHorizontal');
+      // Should expand shorthand to longhand
+      expect(output).toContain('paddingTop');
+      expect(output).toContain('paddingRight');
+      expect(output).toContain('paddingBottom');
+      expect(output).toContain('paddingLeft');
+      expect(output).toContain('marginTop');
+      expect(output).toContain('marginRight');
+      expect(output).toContain('marginBottom');
+      expect(output).toContain('marginLeft');
       expect(output).toContain('borderRadius');
       expect(output).toContain('borderWidth');
     });

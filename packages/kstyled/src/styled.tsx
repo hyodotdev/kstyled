@@ -120,10 +120,13 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
         mergedProps
       );
 
-      // Build style array with correct priority
+      // Build style array with correct priority:
+      // 1. Static compiled styles (lowest)
+      // 2. Dynamic patch
+      // 3. External inline styles (highest - ensures override)
       const styles = buildStyleArray(
-        compiledStyles,
-        styleKeys,
+        mergedCompiledStyles,
+        mergedStyleKeys,
         dynamicPatch,
         externalStyle as StyleValue
       );
