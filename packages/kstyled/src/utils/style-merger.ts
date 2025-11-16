@@ -2,6 +2,8 @@ import type { StyleMetadata, StyleArray, StyleValue, StyleObject, PropsWithTheme
 import type { CompiledStyles } from '../types';
 import { normalizeStyleValue } from '../css-runtime-parser';
 
+type StyleValueLike = StyleValue | ReadonlyArray<StyleValueLike>;
+
 /**
  * Expand shorthand padding/margin properties to longhand
  * This is necessary because base styles use longhand properties (paddingTop, paddingRight, etc.)
@@ -92,24 +94,25 @@ export function buildStyleArray(
 
   // Add external styles last (highest priority)
   // IMPORTANT: Expand shorthand properties to match base style specificity
-  if (externalStyle) {
-    if (Array.isArray(externalStyle)) {
-      // Handle nested arrays from StyleProp
-      for (const style of externalStyle) {
-        if (style) {
-          // Expand shorthand properties for proper override
-          const expanded = expandShorthandProperties(style);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          styles.push(expanded as any);
-        }
-      }
-    } else {
-      // Expand shorthand properties for proper override
-      const expanded = expandShorthandProperties(externalStyle);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      styles.push(expanded as any);
+  const pushExternalStyle = (styleValue: StyleValueLike): void => {
+    if (!styleValue) {
+      return;
     }
-  }
+
+    if (Array.isArray(styleValue)) {
+      for (const nestedStyle of styleValue) {
+        pushExternalStyle(nestedStyle);
+      }
+      return;
+    }
+
+    // Expand shorthand properties for proper override
+    const expanded = expandShorthandProperties(styleValue);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    styles.push(expanded as any);
+  };
+
+  pushExternalStyle(externalStyle);
 
   return styles;
 }
