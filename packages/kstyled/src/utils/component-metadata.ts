@@ -3,11 +3,86 @@ import type { StyleMetadata, ComponentWithMetadata, StyleArray } from '../types/
 import type { CompiledStyles } from '../types';
 
 /**
+ * Type for React internal component representations
+ * Covers forwardRef, memo, and other wrapper types
+ */
+type ReactInternalComponent = {
+  $$typeof?: symbol;
+  render?: unknown;
+  type?: unknown;
+} & Partial<ComponentWithMetadata>;
+
+/**
+ * Type guard to check if component is a React internal component
+ */
+function isReactInternalComponent(
+  component: unknown
+): component is ReactInternalComponent {
+  return (
+    typeof component === 'object' &&
+    component !== null &&
+    ('$$typeof' in component || 'render' in component || 'type' in component)
+  );
+}
+
+/**
  * Check if a component is an Animated component
  * Animated components are frozen objects
  */
 export function isAnimatedComponent(component: ComponentType<unknown>): boolean {
   return Object.isFrozen(component);
+}
+
+/**
+ * Recursively extract metadata from a component
+ * Helper function to traverse through React wrappers
+ */
+function extractMetadataRecursive(
+  component: unknown,
+  depth: number = 0,
+  maxDepth: number = 5
+): StyleMetadata {
+  // Prevent infinite recursion
+  if (depth > maxDepth || !component) {
+    return {};
+  }
+
+  // Check if component has metadata directly
+  if (
+    typeof component === 'object' &&
+    component !== null &&
+    '__kstyled_metadata__' in component
+  ) {
+    return (component as ComponentWithMetadata).__kstyled_metadata__ || {};
+  }
+
+  // Only proceed if it's a React internal component
+  if (!isReactInternalComponent(component)) {
+    return {};
+  }
+
+  // Check if it's a forwardRef component (has $$typeof and render)
+  if (component.$$typeof && component.render) {
+    const renderFunc = component.render;
+    if (
+      typeof renderFunc === 'object' &&
+      renderFunc !== null &&
+      '__kstyled_metadata__' in renderFunc
+    ) {
+      return (renderFunc as ComponentWithMetadata).__kstyled_metadata__ || {};
+    }
+    // Recursively check the render function
+    return extractMetadataRecursive(renderFunc, depth + 1, maxDepth);
+  }
+
+  // Check if it's a React.memo component (has $$typeof and type)
+  if (component.$$typeof && component.type) {
+    const wrappedComponent = component.type;
+    // Recursively check the wrapped component
+    return extractMetadataRecursive(wrappedComponent, depth + 1, maxDepth);
+  }
+
+  return {};
 }
 
 /**
@@ -18,6 +93,8 @@ export function isAnimatedComponent(component: ComponentType<unknown>): boolean 
  * - Direct styled components with __kstyled_metadata__
  * - forwardRef wrapped styled components
  * - React.memo wrapped styled components
+ * - Nested wrappers (e.g., React.memo(forwardRef(...)))
+ * - Components that expose metadata from their internal styled components
  */
 export function extractBaseMetadata(
   baseComponent: ComponentType<unknown>
@@ -26,39 +103,7 @@ export function extractBaseMetadata(
     return {};
   }
 
-  // Check if component has metadata directly
-  if ('__kstyled_metadata__' in baseComponent) {
-    return (baseComponent as ComponentWithMetadata).__kstyled_metadata__ || {};
-  }
-
-  // Check if it's a forwardRef component (has $$typeof and render)
-  // @ts-expect-error - Accessing internal React properties
-  if (baseComponent.$$typeof && baseComponent.render) {
-    // @ts-expect-error - Accessing internal React properties
-    const renderFunc = baseComponent.render;
-    if (renderFunc && '__kstyled_metadata__' in renderFunc) {
-      return (renderFunc as ComponentWithMetadata).__kstyled_metadata__ || {};
-    }
-  }
-
-  // Check if it's a React.memo component (has $$typeof and type)
-  // @ts-expect-error - Accessing internal React properties
-  if (baseComponent.$$typeof && baseComponent.type) {
-    // @ts-expect-error - Accessing internal React properties
-    const wrappedComponent = baseComponent.type;
-    if (wrappedComponent && '__kstyled_metadata__' in wrappedComponent) {
-      return (wrappedComponent as ComponentWithMetadata).__kstyled_metadata__ || {};
-    }
-    // Also check if the wrapped component is a forwardRef
-    if (wrappedComponent.$$typeof && wrappedComponent.render) {
-      const renderFunc = wrappedComponent.render;
-      if (renderFunc && '__kstyled_metadata__' in renderFunc) {
-        return (renderFunc as ComponentWithMetadata).__kstyled_metadata__ || {};
-      }
-    }
-  }
-
-  return {};
+  return extractMetadataRecursive(baseComponent);
 }
 
 /**
