@@ -47,10 +47,10 @@ function extractMetadataRecursive(
     return {};
   }
 
-  // Check if component has metadata directly
+  // Check if component has metadata directly (works for objects and functions)
   if (
-    typeof component === 'object' &&
     component !== null &&
+    (typeof component === 'object' || typeof component === 'function') &&
     '__kstyled_metadata__' in component
   ) {
     return (component as ComponentWithMetadata).__kstyled_metadata__ || {};

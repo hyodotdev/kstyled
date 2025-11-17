@@ -55,9 +55,59 @@ export function mergeAttrsWithProps(
     return propsWithTheme;
   }
 
-  if (typeof attrs === 'function') {
-    return { ...propsWithTheme, ...attrs(propsWithTheme) };
+  const resolvedAttrs = resolveAttrs(attrs, propsWithTheme);
+  if (!resolvedAttrs) {
+    return propsWithTheme;
   }
 
-  return { ...propsWithTheme, ...attrs };
+  return { ...resolvedAttrs, ...propsWithTheme };
+}
+
+/**
+ * Combine base and child attrs preserving execution order
+ * Later attrs override earlier ones
+ */
+export function combineAttrs(
+  baseAttrs: AttrsValue | undefined,
+  childAttrs: AttrsValue | undefined
+): AttrsValue | undefined {
+  if (!baseAttrs) {
+    return childAttrs;
+  }
+  if (!childAttrs) {
+    return baseAttrs;
+  }
+
+  // If both are plain objects we can merge once
+  if (typeof baseAttrs !== 'function' && typeof childAttrs !== 'function') {
+    return { ...baseAttrs, ...childAttrs };
+  }
+
+  // Otherwise evaluate sequentially at runtime so each attrs function
+  // can see the props (including previous attrs results)
+  return (props: PropsWithTheme) => {
+    const baseResult = resolveAttrs(baseAttrs, props);
+    const propsWithBase = baseResult ? { ...props, ...baseResult } : props;
+    const childResult = resolveAttrs(childAttrs, propsWithBase);
+
+    return {
+      ...(baseResult || {}),
+      ...(childResult || {}),
+    };
+  };
+}
+
+function resolveAttrs(
+  attrs: AttrsValue | undefined,
+  propsWithTheme: PropsWithTheme
+): Record<string, unknown> | undefined {
+  if (!attrs) {
+    return undefined;
+  }
+
+  if (typeof attrs === 'function') {
+    return attrs(propsWithTheme) || undefined;
+  }
+
+  return attrs;
 }

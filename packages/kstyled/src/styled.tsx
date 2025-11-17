@@ -14,7 +14,7 @@ import {
   SectionList,
 } from 'react-native';
 import type { StyledComponent, CompiledStyles, AttrsFunction } from './types';
-import type { StyleMetadata, StyledFactory, StyleObject, PropsWithTheme, StyleValue, DynamicPatchFunction } from './types/styled-types';
+import type { StyleMetadata, StyledFactory, StyleObject, PropsWithTheme, StyleValue, DynamicPatchFunction, AttrsValue } from './types/styled-types';
 import { useTheme } from './theme';
 import { parseCSS } from './css-runtime-parser';
 import {
@@ -32,6 +32,7 @@ import {
   filterProps,
   hasTransientProps,
   mergeAttrsWithProps,
+  combineAttrs,
 } from './utils/props-filter';
 
 /**
@@ -71,6 +72,8 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
 
     // Extract base component's metadata (handles Animated components)
     const baseMetadata = extractBaseMetadata(BaseComponent);
+    const combinedAttrs = combineAttrs(baseMetadata.attrs, attrs);
+    const hasAttrs = Boolean(combinedAttrs);
 
     // Merge parent and child styles
     const { mergedCompiledStyles, mergedStyleKeys } = mergeMetadata(
@@ -85,11 +88,11 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
     );
 
     const StyledComponent = forwardRef<unknown, Record<string, unknown>>((props, ref) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const Component = (props.as || BaseComponent) as ComponentType<any>;
-
       // Fast path: static styles only (no dynamic, no attrs, no external style)
-      if (!getDynamicPatch && !attrs && !props.style) {
+      if (!getDynamicPatch && !hasAttrs && !props.style) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const Component = (props.as || BaseComponent) as ComponentType<any>;
+
         // Check if we have any transient props first
         const hasTransient = hasTransientProps(props);
 
@@ -105,13 +108,13 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
       }
 
       // Slow path: dynamic styles, attrs, or external styles
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { as: _, style: externalStyle, ...restProps } = props;
+      const { as: asProp, style: externalStyle, ...restProps } = props;
       const theme = useTheme();
 
       // Build final props with theme
       const propsWithTheme: PropsWithTheme = { ...restProps, theme };
-      const mergedProps = mergeAttrsWithProps(attrs, propsWithTheme);
+      const propsWithAttrs = mergeAttrsWithProps(combinedAttrs, propsWithTheme);
+      const mergedProps = propsWithAttrs;
 
       // Compute and merge dynamic patches
       const dynamicPatch = mergeDynamicPatches(
@@ -132,9 +135,11 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
       );
 
       // Filter props and add styles
-      const forwardedProps = filterProps(restProps, ref);
+      const forwardedProps = filterProps(propsWithAttrs, ref);
       forwardedProps.style = styles;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const Component = (asProp || (propsWithAttrs.as as ComponentType<any>) || BaseComponent) as ComponentType<any>;
       return <Component {...forwardedProps} />;
     });
 
@@ -158,7 +163,7 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
     ): StyledComponent<C, P, AttrsP & NewAttrs> {
       return createStyledComponent({
         ...metadata,
-        attrs: attrsArg as Record<string, unknown>,
+        attrs: attrsArg as AttrsValue,
       });
     };
 
@@ -174,7 +179,7 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
         compiledStyles: mergedCompiledStyles,
         styleKeys: mergedStyleKeys,
         getDynamicPatch: combinedGetDynamicPatch,
-        attrs,
+        attrs: combinedAttrs,
       },
       BaseComponent
     );
@@ -208,7 +213,7 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
       compiledStyles,
       styleKeys: compiledStyles ? ['base'] : undefined,
       getDynamicPatch: dynamicGetter as DynamicPatchFunction | undefined,
-      attrs: baseAttrs as Record<string, unknown>,
+      attrs: baseAttrs as AttrsValue,
     };
 
     return createStyledComponent(metadata);
@@ -220,7 +225,11 @@ function styledFunction<C extends ComponentType<any>, P = {}, AttrsP = {}>(
   factory.__withStyles = function (
     metadata: StyleMetadata
   ): StyledComponent<C, P> {
-    return createStyledComponent({ ...metadata, attrs: baseAttrs as Record<string, unknown> });
+    const mergedAttrs = combineAttrs(
+      baseAttrs as AttrsValue | undefined,
+      metadata.attrs
+    );
+    return createStyledComponent({ ...metadata, attrs: mergedAttrs });
   };
 
   /**

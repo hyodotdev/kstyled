@@ -1,9 +1,18 @@
+import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { styled } from '../styled';
 import { css } from '../css';
 import type { CompiledStyles, StyleMetadata } from '../types';
 import { normalizeStyleValue } from '../css-runtime-parser';
 import { mergeDynamicPatches } from '../utils/style-merger';
+
+jest.mock('../theme', () => {
+  const actual = jest.requireActual('../theme');
+  return {
+    ...actual,
+    useTheme: () => actual.defaultTheme,
+  };
+});
 
 describe('kstyled Runtime Tests', () => {
   describe('Static Styles', () => {
@@ -225,6 +234,48 @@ describe('kstyled Runtime Tests', () => {
         placeholder: 'Test',
         editable: false,
       });
+    });
+
+    test('should forward attrs values to rendered component', () => {
+      const Base = React.forwardRef((props: any, _ref) => {
+        return React.createElement('Base', props);
+      });
+
+      const compiledStyles = StyleSheet.create({
+        base: { padding: 4 },
+      }) as unknown as CompiledStyles;
+
+      const StyledComp = styled(Base).__withStyles({
+        compiledStyles,
+        styleKeys: ['base'],
+        attrs: {
+          accessibilityRole: 'button',
+          testID: 'default-id',
+        },
+      });
+
+      const element = (StyledComp as any).render({ testID: 'override-id' }, null);
+
+      expect(element.props.accessibilityRole).toBe('button');
+      expect(element.props.testID).toBe('override-id');
+      expect(element.props.style).toBeDefined();
+    });
+
+    test('should allow attrs to override base component via as', () => {
+      const Base = React.forwardRef((props: any, _ref) => React.createElement('Base', props));
+      const Override = React.forwardRef((props: any, _ref) => React.createElement('Override', props));
+
+      const StyledComp = styled(Base).__withStyles({
+        attrs: () => ({
+          as: Override,
+        }),
+      });
+
+      const elementWithOverride = (StyledComp as any).render({}, null);
+      expect(elementWithOverride.type).toBe(Override);
+
+      const elementWithProp = (StyledComp as any).render({ as: Base }, null);
+      expect(elementWithProp.type).toBe(Base);
     });
   });
 
