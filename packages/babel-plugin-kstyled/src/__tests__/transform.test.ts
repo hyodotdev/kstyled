@@ -138,6 +138,22 @@ describe('babel-plugin-kstyled', () => {
       expect(output).not.toContain('paddingVertical');
       expect(output).not.toContain('paddingHorizontal');
     });
+
+    test('should skip static optimization for member expressions', () => {
+      const input = `
+        import { styled } from 'kstyled';
+        import { Typography } from './typography';
+
+        const SectionTitle = styled(Typography.Body2)\`
+          font-weight: 700;
+        \`;
+      `;
+
+      const output = transform(input);
+
+      expect(output).toContain('styled(Typography.Body2).__withStyles');
+      expect(output).not.toContain('forwardRef');
+    });
   });
 
   describe('Dynamic Style Generation', () => {

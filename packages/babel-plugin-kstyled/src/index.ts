@@ -560,6 +560,9 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
           // generate a lightweight component directly without styled() wrapper
           const isStaticOnly = dynamicProps.length === 0 && !attrsMetadata;
 
+          const baseComponent = styledCall.arguments[0];
+          const canOptimizeBaseComponent = t.isIdentifier(baseComponent);
+
           if (opts.debug) {
             console.log('[babel-plugin-kstyled] Optimization check:');
             console.log('  isStaticOnly:', isStaticOnly);
@@ -567,15 +570,18 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
             console.log('  opts.optimizeStatic:', opts.optimizeStatic);
             console.log('  dynamicProps.length:', dynamicProps.length);
             console.log('  attrsMetadata:', !!attrsMetadata);
+            console.log('  canOptimizeBaseComponent:', canOptimizeBaseComponent);
           }
 
-          if (isStaticOnly && styleSheetNode && opts.optimizeStatic !== false) {
+          if (
+            isStaticOnly &&
+            styleSheetNode &&
+            opts.optimizeStatic !== false &&
+            canOptimizeBaseComponent
+          ) {
             // Import forwardRef from React
             const program = path.findParent((p) => p.isProgram()) as NodePath<t.Program>;
             const forwardRefImport = addNamed(program, 'forwardRef', 'react');
-
-            // Get the base component from styled(Component)
-            const baseComponent = styledCall.arguments[0];
 
             // Generate ultra-optimized JSX:
             // forwardRef((props, ref) => (
@@ -585,15 +591,8 @@ export default function babelPluginKStyled(): PluginObj<PluginState> {
             // No memo: styled-components doesn't use memo either, so fair comparison
             // JSX spread: Let React handle prop spreading efficiently
 
-            // Get component name for JSX
-            let componentName = 'View';
-            if (t.isIdentifier(baseComponent)) {
-              componentName = baseComponent.name;
-            } else if (t.isMemberExpression(baseComponent)) {
-              if (t.isIdentifier(baseComponent.property)) {
-                componentName = baseComponent.property.name;
-              }
-            }
+            // Base component is guaranteed to be an Identifier here
+            const componentName = (baseComponent as t.Identifier).name;
 
             // Create style expression: props.style ? [__ks.base, props.style] : __ks.base
             // IMPORTANT: Base styles first, external styles last (external overrides base)
